@@ -18,7 +18,7 @@ class MahjongTile:
         if self.number is None: self.display = self.TILE_DISPLAY[tile_type]
 
     @classmethod
-    def make_tiles_set(use_akadora=True):
+    def make_tiles_set(cls, use_akadora=True):
         tiles = []
         for _ in range(4):
             for i in range(1,10):
