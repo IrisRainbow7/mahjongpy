@@ -18,7 +18,7 @@ class MahjongPlayer:
     def is_tenpai():
         return(True)
 
-    def is_furiten()
+    def is_furiten():
         return(False)
 
     def is_hora():
@@ -64,7 +64,7 @@ class MahjongPlayer:
     def score_han():
         return(3)
 
-    def is_mangan()
+    def is_mangan():
         return(False)
 
     def is_haneman():
@@ -73,10 +73,10 @@ class MahjongPlayer:
     def is_baiman():
         return(False)
 
-    def is_sanbaiman()
+    def is_sanbaiman():
         return(False)
 
-    def is_kazoeyakuman()
+    def is_kazoeyakuman():
         return(False)
 
     def score():
