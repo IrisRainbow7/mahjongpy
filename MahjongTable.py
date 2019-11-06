@@ -8,7 +8,7 @@ class MahjongTable:
 
     def __init__(self, tiles=[], wind="ton", kyoku=1, honba=0, dora_showing_tile=None, dora_tile=None, \
                 ri_bou=0, players=[], use_akadora=True, kuitan=True, **rules):
-        self.tiles = MahjongTile.MahjongTile.make_tiles_set(use_akadora=use_akadora)
+        self.tiles = MahjongTile.MahjongTile.make_tiles_set(use_akadora=rules.get(use_akadora, use_akadora))
         random.shuffle(self.tiles)
         self.wind = wind
         self.kyoku = kyoku

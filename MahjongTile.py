@@ -50,4 +50,12 @@ class MahjongTile:
         else:
             return(MahjongTile(self.NEXT_ZIHAI[self.tile_type]))
 
-
+    def __lt__(self, other):
+            TYPE_PRIORITY = {'manzu':1, 'souzu':2, 'pinzu':3, 'ton':4, 'nan':5, 'sha':6, 'pei':7, 'haku':8, 'hatu':9, 'tyun':10}
+            if self.tile_type != other.tile_type:
+                return(TYPE_PRIORITY[self.tile_type] < TYPE_PRIORITY[other.tile_type])
+            else:
+                if self.number is None or other.number is None:
+                    return True
+                else:
+                    return(self.number < other.number)

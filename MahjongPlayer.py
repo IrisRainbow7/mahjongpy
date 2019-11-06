@@ -2,12 +2,14 @@ class MahjongPlayer:
 
 
     def __init__(self, hands=[], discards=[], melds=[], oya=False, points=25000, wind=''):
+        if len(hands) not in [13, 14]: raise ValueError('amout of hands is not 13 or 14.')
         self.hands = hands
         self.discards = discards
         self.melds = melds
         self.oya = oya
         self.points = points
         self.wind = wind
+        self.hands = sorted(self.hands)
 
     def shanten():
         return(1)
