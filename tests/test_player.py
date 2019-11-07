@@ -8,10 +8,10 @@ class TestPlayer(unittest.TestCase):
 
     def test_make_player(self):
         p = MahjongPlayer.MahjongPlayer()
-        assertEqual(p.points, 25000)
-        assertFalse(p.oya)
+        self.assertEqual(p.points, 25000)
+        self.assertFalse(p.oya)
 
     def test_tenpai(self):
         p = MahjongPlayer.MahjongPlayer(hands=HANDS1)
-        assertTrue(p.is_tenpai)
+        self.assertTrue(p.is_tenpai)
 
