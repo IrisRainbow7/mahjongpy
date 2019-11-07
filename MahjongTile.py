@@ -46,9 +46,9 @@ class MahjongTile:
         return(tiles)
 
     @classmethod
-    def make_hands_set(cls, man, sou, pin, wind, zihai):
-        WIND_TILES = {1:'ton', 2:'nan', 3:'sha', 4:'pei'}
-        ZIHAI_TILES = {1:'haku', 2:'hatu', 3:'tyun'}
+    def make_hands_set(cls, man='', sou='', pin='', wind='', zihai=''):
+        WIND_TILES = {'1':'ton', '2':'nan', '3':'sha', '4':'pei'}
+        ZIHAI_TILES = {'1':'haku', '2':'hatu', '3':'tyun'}
         if not len(man)+len(sou)+len(pin)+len(wind)+len(zihai) in [13,14]:
             raise ValueError('amount of tile is not 13 or 14')
         tiles = []
@@ -60,7 +60,7 @@ class MahjongTile:
             tiles.append(MahjongTile('pinzu',int(i)))
         for i in wind:
             tiles.append(MahjongTile(WIND_TILES[i]))
-        for i in man:
+        for i in zihai:
             tiles.append(MahjongTile(ZIHAI_TILES[i]))
         return(tiles)
 
