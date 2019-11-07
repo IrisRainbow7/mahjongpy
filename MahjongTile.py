@@ -45,6 +45,26 @@ class MahjongTile:
             tiles.append(MahjongTile('pinzu',5,akadora=True))
         return(tiles)
 
+    @classmethod
+    def make_hands_set(cls, man, sou, pin, wind, zihai):
+        WIND_TILES = {1:'ton', 2:'nan', 3:'sha', 4:'pei'}
+        ZIHAI_TILES = {1:'haku', 2:'hatu', 3:'tyun'}
+        if not len(man)+len(sou)+len(pin)+len(wind)+len(zihai) in [13,14]:
+            raise ValueError('amount of tile is not 13 or 14')
+        tiles = []
+        for i in man:
+            tiles.append(MahjongTile('manzu',int(i)))
+        for i in sou:
+            tiles.append(MahjongTile('souzu',int(i)))
+        for i in pin:
+            tiles.append(MahjongTile('pinzu',int(i)))
+        for i in wind:
+            tiles.append(MahjongTile(WIND_TILES[i]))
+        for i in man:
+            tiles.append(MahjongTile(ZIHAI_TILES[i]))
+        return(tiles)
+
+
     def next(self):
         if self.number is not None:
             new_number = self.number + 1
