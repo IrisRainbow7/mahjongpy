@@ -1,5 +1,4 @@
 import unittest
-import MahjongTile
 import MahjongTable
 
 class TestTable(unittest.TestCase):

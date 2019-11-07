@@ -38,8 +38,8 @@ class MahjongTile:
             tiles.append(MahjongTile('tyun'))
         if use_akadora:
             tiles.pop(12)
-            tiles.pop(13)
-            tiles.pop(14)
+            tiles.pop(12)
+            tiles.pop(12)
             tiles.append(MahjongTile('manzu',5,akadora=True))
             tiles.append(MahjongTile('souzu',5,akadora=True))
             tiles.append(MahjongTile('pinzu',5,akadora=True))
