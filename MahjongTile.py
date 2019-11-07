@@ -16,6 +16,9 @@ class MahjongTile:
         self.akadora = akadora
         self.name_jp = self.NUMBER_READING_JP[self.number] + self.TILE_READING_JP[self.tile_type]
         self.display = str(self.number) + self.TILE_DISPLAY[self.tile_type]
+        if self.akadora:
+            self.display += '*'
+            self.name_jp += '*'
         if self.number is None: self.display = self.TILE_DISPLAY[self.tile_type]
 
     @classmethod
@@ -59,3 +62,6 @@ class MahjongTile:
                     return True
                 else:
                     return(self.number < other.number)
+
+    def __eq__(self, other):
+        return(self.tile_type == other.tile_type and self.number == other.number)
