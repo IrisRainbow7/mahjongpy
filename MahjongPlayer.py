@@ -11,80 +11,83 @@ class MahjongPlayer:
         self.wind = wind
         self.hands = sorted(self.hands)
 
-    def shanten():
+    def shanten(self):
         return(1)
 
-    def is_riichi():
+    def is_riichi(self):
         return(False)
 
-    def is_tenpai():
+    def is_tenpai(self):
         return(True)
 
-    def is_furiten():
+    def is_furiten(self):
         return(False)
 
-    def is_hora():
+    def is_kyusyukyuhai(self):
         return(False)
 
-    def displayed_doras():
+    def is_hora(self):
+        return(False)
+
+    def displayed_doras(self, dora):
         return(1)
 
-    def akadoras():
+    def akadoras(self):
         return(1)
 
-    def doras():
+    def doras(self):
         return(self.displayed_doras() + self.akadoras())
 
-    def shuntus():
+    def shuntus(self):
         return(1)
 
-    def ankos():
+    def ankos(self):
         return(1)
 
-    def minkos():
+    def minkos(self):
         return(1)
 
-    def kotus():
+    def kotus(self):
         return(self.ankos() + self.minkos())
 
-    def ankans():
+    def ankans(self):
         return(1)
 
-    def minkans():
+    def minkans(self):
         return(1)
 
-    def kantus():
+    def kantus(self):
         return(self.ankans() + self.minkans())
 
-    def yakus():
-        if not is_hora: raise RuntimeError('Not hora')
+    def yakus(self):
+        if not self.is_hora: raise RuntimeError('Not hora')
         return([])
 
-    def score_hu():
+    def score_hu(self):
         return(30)
 
-    def score_han():
+    def score_han(self):
         return(3)
 
-    def is_mangan():
+    def is_mangan(self):
         return(False)
 
-    def is_haneman():
+    def is_haneman(self):
         return(False)
 
-    def is_baiman():
+    def is_baiman(self):
         return(False)
 
-    def is_sanbaiman():
+    def is_sanbaiman(self):
         return(False)
 
-    def is_kazoeyakuman():
+    def is_kazoeyakuman(self):
         return(False)
 
-    def score():
-        if not is_hora: raise RuntimeError('Not hora')
+    def score(self):
+        if not self.is_hora: raise RuntimeError('Not hora')
         return(1000)
 
-    def payed_score():
-        if not is_hora: raise RuntimeError('Not hora')
+    def payed_score(self):
+        if not self.is_hora: raise RuntimeError('Not hora')
         return([1000, 500])
