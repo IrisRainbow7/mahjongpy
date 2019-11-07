@@ -5,6 +5,7 @@ import random
 
 class MahjongTable:
 
+    WIND_NAME_JP = {'ton':'東', 'nan':'南', 'sha':'西', 'pei':'北'}
 
     def __init__(self, tiles=[], wind="ton", kyoku=1, honba=0, dora_showing_tile=None, dora_tile=None, \
                 ri_bou=0, players=[], use_akadora=True, kuitan=True, rules={}):
@@ -24,8 +25,8 @@ class MahjongTable:
         self.players = [p1, p2, p3, p4]
         self.use_akadora = rules.get('use_akadora', use_akadora)
         self.kuitan = rules.get('kuitan', kuitan)
-
-
+        self.round_name_jp = WIND_NAME_JP[self.wind] + str(kyoku) + '局'
+        self.info = self.round_name_jp + self.honba + '本場'
 
     def deal_tiles(self,oya=1):
         hands = [[], [], [], []]
@@ -34,3 +35,5 @@ class MahjongTable:
                 hands[i].append(self.tiles.pop(random.randrange(10)))
         hands[oya-1].append(self.tiles.pop(random.randrange(10)))
         return(hands)
+
+
