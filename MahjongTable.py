@@ -25,8 +25,8 @@ class MahjongTable:
         self.players = [p1, p2, p3, p4]
         self.use_akadora = rules.get('use_akadora', use_akadora)
         self.kuitan = rules.get('kuitan', kuitan)
-        self.round_name_jp = WIND_NAME_JP[self.wind] + str(kyoku) + '局'
-        self.info = self.round_name_jp + self.honba + '本場'
+        self.round_name_jp = self.WIND_NAME_JP[self.wind] + str(kyoku) + '局'
+        self.info = self.round_name_jp + str(self.honba) + '本場'
 
     def deal_tiles(self,oya=1):
         hands = [[], [], [], []]
@@ -36,4 +36,13 @@ class MahjongTable:
         hands[oya-1].append(self.tiles.pop(random.randrange(10)))
         return(hands)
 
+    def draw(self, player):
+        draw_tile = self.tiles.pop(random.randrange(5))
+        player.hands.append(draw_tile)
+        player.sort()
 
+    def discard(self, player, tile):
+        if not tile in player.hands:
+            raise RuntimeError('player does NOT have such tile')
+        else:
+            player.discards.append(player.hands.pop(player.hands.index(MahjongTile.MahjongTile(tile.tile_type,tile.number))))

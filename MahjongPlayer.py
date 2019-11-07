@@ -9,7 +9,26 @@ class MahjongPlayer:
         self.oya = oya
         self.points = points
         self.wind = wind
+        self.sort()
+
+    def sort(self):
         self.hands = sorted(self.hands)
+
+    def hands_display(self):
+        for i in self.hands:
+            print(i.display)
+
+    def hands_name_jp(self):
+        for i in self.hands:
+            print(i.name_jp)
+
+    def discards_display(self):
+        for i in self.discards:
+            print(i.display)
+
+    def discards_name_jp(self):
+        for i in self.discards:
+            print(i.name_jp)
 
     def shanten(self):
         return(1)
