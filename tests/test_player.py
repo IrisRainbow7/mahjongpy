@@ -13,6 +13,16 @@ class TestPlayer(unittest.TestCase):
     HANDS7 = MahjongTile.MahjongTile.make_hands_set('19', '19', '19', '1234', '1233') #国士無双
     HANDS8 = MahjongTile.MahjongTile.make_hands_set('1155', '77', '3399', '22', '32') #七対子(一向聴)
     HANDS9 = MahjongTile.MahjongTile.make_hands_set('1199', '77', '3399', '22', '32') #九種九牌
+    HANDS10 = MahjongTile.MahjongTile.make_hands_set('123456789', '', '', '222', '33') #一気通貫
+    HANDS11 = MahjongTile.MahjongTile.make_hands_set('123', '123', '123', '222', '33') #三色同順
+    HANDS12 = MahjongTile.MahjongTile.make_hands_set('222', '222', '222', '222', '33') #三色同刻
+    HANDS13 = MahjongTile.MahjongTile.make_hands_set('123', '123999', '', '222', '33') #チャンタ
+    HANDS14 = MahjongTile.MahjongTile.make_hands_set('345345', '345345', '', '', '33') #二盃口
+    HANDS15 = MahjongTile.MahjongTile.make_hands_set('123', '123999', '11789') #ジュンチャン
+    HANDS16 = MahjongTile.MahjongTile.make_hands_set('111456678', '', '', '333', '22') #混一色
+    HANDS17 = MahjongTile.MahjongTile.make_hands_set('11122245667899') #清一色
+    HANDS18 = MahjongTile.MahjongTile.make_hands_set('111666', '444', '11', '444') #四暗刻
+    HANDS19 = MahjongTile.MahjongTile.make_hands_set('11122345678999') #九蓮宝燈
 
     def test_make_player(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
@@ -80,10 +90,16 @@ class TestPlayer(unittest.TestCase):
         print('*')#################
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS2, turn=5)
         self.assertEqual(p.yakus(), [])
-        yakus = {0:'tanyao', 1:'pinfu', 2:'ipeikou', 3:'chitoitu', 4:'daisangen', 5:'kokushimusou'}
-        hands = [self.HANDS1, self.HANDS3, self.HANDS4, self.HANDS5, self.HANDS6, self.HANDS7]
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS18, is_tumo=True)
+        self.assertIn('suankou', p.yakus())
+        yakus = {0:'tanyao', 1:'pinfu', 2:'ipeikou', 3:'chitoitu', 4:'daisangen', 5:'kokushimusou', 6:'yakuhai', \
+                7:'ikkituukan', 8:'sansyokudouzyun', 9:'sansyokudoukou', 10:'chanta', 11:'ryanpeikou', \
+                12:'zyuntyan', 13:'honitu', 14:'chinitu', 15:'tyurenboutou'}
+        hands = [self.HANDS1, self.HANDS3, self.HANDS4, self.HANDS5, self.HANDS6, self.HANDS7, self.HANDS6, \
+                self.HANDS10, self.HANDS11, self.HANDS12, self.HANDS13, self.HANDS14, self.HANDS15, self.HANDS16, \
+                self.HANDS17, self.HANDS19]
         for i in yakus:
-            print('*')#################
+            print(yakus[i])#################
             p = MahjongPlayer.MahjongPlayer(hands=hands[i])
             self.assertIn(yakus[i], p.yakus())
 

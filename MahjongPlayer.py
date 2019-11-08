@@ -4,9 +4,10 @@ import MahjongTable
 class MahjongPlayer:
 
     TILE_TYPES = ['pinzu', 'manzu', 'souzu', 'ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
+    KYOMU_TILE = MahjongTile.MahjongTile(None)
 
-    def __init__(self, hands=[], discards=[], melds=[], oya=False, points=25000, wind='ton', latest_tile=None, \
-                table=None, turn=0):
+    def __init__(self, hands=[], discards=[], melds=[], oya=False, points=25000, wind='ton', latest_tile=KYOMU_TILE, \
+                table=None, turn=0, is_tumo=False):
         if len(hands) not in [13, 14]: raise ValueError('amout of hands is not 13 or 14.')
         self.hands = hands
         self.discards = discards
@@ -18,7 +19,7 @@ class MahjongPlayer:
         self.is_riichi = False
         self.turn = turn
         self.riichi_turn = 100
-        self.is_tumo = False
+        self.is_tumo = is_tumo
         self.is_ron = False
         self.ankans = []
         self.minkans = []
@@ -99,7 +100,7 @@ class MahjongPlayer:
         is_hora = is_hora or (len(tiles) == 0)
         if is_hora: return(mentus[0])
 
-        return([MahjongTile.MahjongTile(None)])
+        return([self.KYOMU_TILE])
 
     def make_shuntus(self, tiles, mentus):
         for _ in range(2):
@@ -181,7 +182,9 @@ class MahjongPlayer:
         count = 0
         for i in mentus:
             for j in i:
-                if j.number in [1, 9, None]: count += 1
+                if j.number in [1, 9, None]:
+                    count += 1
+                    break
         if is_hora and count==5: return(True)
 
         count = 0
@@ -193,7 +196,9 @@ class MahjongPlayer:
         is_hora = is_hora or (len(tiles) == 0)
         for i in mentus:
             for j in i:
-                if j.number in [1, 9, None]: count += 1
+                if j.number in [1, 9, None]:
+                    count += 1
+                    break
         if is_hora and count==5: return(True)
 
         return(False)
@@ -209,7 +214,9 @@ class MahjongPlayer:
         count = 0
         for i in mentus:
             for j in i:
-                if j.number in [1, 9]: count += 1
+                if j.number in [1, 9]:
+                    count += 1
+                    break
         if is_hora and count==5: return(True)
 
         count = 0
@@ -221,7 +228,9 @@ class MahjongPlayer:
         is_hora = is_hora or (len(tiles) == 0)
         for i in mentus:
             for j in i:
-                if j.number in [1, 9]: count += 1
+                if j.number in [1, 9]:
+                    count += 1
+                    break
         if is_hora and count==5: return(True)
 
         return(False)
@@ -338,23 +347,19 @@ class MahjongPlayer:
                 count.append(len([k for k in tiles if k.tile_type==i and k.number==j]))
             if count.count(1) == 9: judge = True
         if judge: yakus.append('ikkituukan')
-        judge = False
         for i in range(1,8):
+            count = []
             for j in self.TILE_TYPES[:3]:
-                if len([k for k in tiles if k.tile_type==j and k.number==i]) == 3 and \
-                    len([k for k in tiles if k.tile_type==j and k.number==i+1]) == 3 and \
-                    len([k for k in tiles if k.tile_type==j and k.number==i+2]) == 3:
-                    judge = True
-        if judge: yakus.append('sansyokudouzyun')
-        judge = False
-        tmp = self.TILE_TYPES[:3] + self.TILE_TYPES[:3]
+                count.append(len([k for k in tiles if k.tile_type==j and k.number==i]))
+                count.append(len([k for k in tiles if k.tile_type==j and k.number==i+1]))
+                count.append(len([k for k in tiles if k.tile_type==j and k.number==i+1]))
+            if count.count(1) == 9: yakus.append('sansyokudouzyun')
         for i in range(1,10):
-            for j in range(3):
-                if len([k for k in tiles if k.tile_type==tmp[j] and k.number==i]) == 3 and \
-                    len([k for k in tiles if k.tile_type==tmp[j+1] and k.number==i+1]) == 3 and \
-                    len([k for k in tiles if k.tile_type==tmp[j+2] and k.number==i+2]) == 3:
-                    judge = True
-        if judge: yakus.append('sansyokudoukoku')
+            count = []
+            for j in self.TILE_TYPES[:3]:
+                count.append(len([k for k in tiles if k.tile_type==j and k.number==i]))
+            if count.count(3) == 3: yakus.append('sansyokudoukou')
+        if judge: yakus.append('sansyokudoukou')
         if len(self.minkos) < 2  and len(self.kotus()) == 3: yakus.append('sanankou')
         if len(self.kotus()) == 4:
             if self.is_menzen():
@@ -367,7 +372,7 @@ class MahjongPlayer:
         if self.is_ryanpeikou(self.hands[:], []): yakus.append('ryanpeikou')
         if self.is_zyuntyan():yakus.append('zyuntyan')
         for i in self.TILE_TYPES[:3]:
-            if len([j for j in self.hands if j.tile_type in [i,None]]) == 14: yakus.append('honitu')
+            if len([j for j in self.hands if j.tile_type in [i]+self.TILE_TYPES[3:]]) == 14: yakus.append('honitu')
         tiles = self.hands[:] + sum(self.melds, [])
         if self.zyantou()[0].number==None and len([i for i in tiles if i.number==None]) > 5: yakus.append('syousangen')
         if len([i for i in self.hands if i.number==[i,9,None]]) == 14: yakus.append('honroutou')
