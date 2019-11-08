@@ -111,6 +111,20 @@ class TestPlayer(unittest.TestCase):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
         self.assertEqual(p.payed_score(), [2000, 1000])
 
+    def test_kokushimusou(self):
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS7)
+        self.assertTrue(p.is_kokushimusou())
+
+    def test_chitoitu(self):
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
+        self.assertTrue(p.is_chitoitu())
+
+    def test_hora(self):
+        hands = [self.HANDS1, self.HANDS2, self.HANDS3, self.HANDS4, self.HANDS5, self.HANDS6, self.HANDS7]
+        for i in hands:
+            p = MahjongPlayer.MahjongPlayer(hands=i)
+            self.assertTrue(p.is_hora())
+
 
 
 
