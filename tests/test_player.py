@@ -17,7 +17,12 @@ class TestPlayer(unittest.TestCase):
     def test_make_player(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
         self.assertEqual(p.points, 25000)
+        self.assertEqual(p.turn, 0)
+        self.assertEqual(p.riichi_turn, None)
         self.assertFalse(p.oya)
+        self.assertFalse(p.is_riichi)
+        self.assertFalse(p.is_tumo)
+        self.assertFalse(p.is_ron)
 
     def test_shanten(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS8)
@@ -25,7 +30,7 @@ class TestPlayer(unittest.TestCase):
 
     def test_riichi(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertFalse(p.is_riichi())
+        self.assertFalse(p.is_riichi)
 
     def test_tenpai(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
@@ -61,19 +66,26 @@ class TestPlayer(unittest.TestCase):
 
     def test_minkos(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertEqual(p.minkos(), 9)
+        self.assertEqual(p.minkos, 9)
 
     def test_ankans(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertEqual(p.ankans(), 9)
+        self.assertEqual(p.ankans, 9)
 
     def test_minkans(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertEqual(p.minkans(), 9)
+        self.assertEqual(p.minkans, 9)
 
     def test_yakus(self):
-        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertEqual(p.yakus(), 9)
+        print('*')#################
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS2, turn=5)
+        self.assertEqual(p.yakus(), [])
+        yakus = {0:'tanyao', 1:'pinfu', 2:'ipeikou', 3:'chitoitu', 4:'daisangen', 5:'kokushimusou'}
+        hands = [self.HANDS1, self.HANDS3, self.HANDS4, self.HANDS5, self.HANDS6, self.HANDS7]
+        for i in yakus:
+            print('*')#################
+            p = MahjongPlayer.MahjongPlayer(hands=hands[i])
+            self.assertIn(yakus[i], p.yakus())
 
     def test_score_hu(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS3)
@@ -114,6 +126,8 @@ class TestPlayer(unittest.TestCase):
     def test_kokushimusou(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS7)
         self.assertTrue(p.is_kokushimusou())
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS2)
+        self.assertFalse(p.is_kokushimusou())
 
     def test_chitoitu(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
@@ -124,6 +138,14 @@ class TestPlayer(unittest.TestCase):
         for i in hands:
             p = MahjongPlayer.MahjongPlayer(hands=i)
             self.assertTrue(p.is_hora())
+
+    def test_menzen(self):
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
+        self.assertTrue(p.is_menzen())
+
+    def test_wait_ryanmen(self):
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
+        self.assertFalse(p.is_wait_ryanmen())
 
 
 

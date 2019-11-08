@@ -3,12 +3,12 @@ class MahjongTile:
     TILE_TYPES = ['manzu', 'pinzu', 'souzu', 'ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
     TILE_TYPES_ZIHAI = ['ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
     NUMBER_READING_JP = {1:'イー', 2:'リャン', 3:'サン', 4:'スー', 5:'ウー', 6:'ロー', 7:'チー', 8:'パー', 9:'キュー', None:''}
-    TILE_READING_JP = {'manzu':'ワン', 'pinzu':'ピン', 'souzu':'ソー', 'ton':'トン', 'nan':'ナン', 'sha':'シャー', 'pei':'ペイ', 'haku':'ハク', 'hatu':'ハツ', 'tyun':'チュン'}
-    TILE_DISPLAY = {'manzu':'萬', 'pinzu':'●', 'souzu':'Ⅰ', 'ton':'東', 'nan':'南', 'sha':'西', 'pei':'北', 'haku':'白', 'hatu':'發', 'tyun':'中'}
+    TILE_READING_JP = {'manzu':'ワン', 'pinzu':'ピン', 'souzu':'ソー', 'ton':'トン', 'nan':'ナン', 'sha':'シャー', 'pei':'ペイ', 'haku':'ハク', 'hatu':'ハツ', 'tyun':'チュン', None:'虚無'}
+    TILE_DISPLAY = {'manzu':'萬', 'pinzu':'●', 'souzu':'Ⅰ', 'ton':'東', 'nan':'南', 'sha':'西', 'pei':'北', 'haku':'白', 'hatu':'發', 'tyun':'中', None:'虚無'}
     NEXT_ZIHAI = {'ton':'nan', 'nan':'sha', 'sha':'pei', 'pei':'ton', 'haku':'hatu', 'hatu':'tyun', 'tyun':'haku'}
 
     def __init__(self, tile_type, number=1, akadora=False):
-        if not tile_type in self.TILE_TYPES: raise ValueError('unknown tile types')
+        if not tile_type in self.TILE_TYPES+[None]: raise ValueError('unknown tile types')
         if not number in [i for i in range(1,10)]: raise ValueError('unknown tile types')
         self.tile_type = tile_type
         self.number = number
