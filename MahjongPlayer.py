@@ -48,7 +48,94 @@ class MahjongPlayer:
             print(i.name_jp)
 
     def shanten(self):
-        return(1)
+        counts = [100]
+
+        tiles = self.hands[:]
+        mentus = []
+        self.make_shuntus(tiles, mentus)
+        self.make_kotus(tiles, mentus)
+        self.make_zyantou(tiles, mentus)
+        tmp = tiles[:]
+        count = 0
+        for i in self.TILE_TYPES[:3]:
+            for j in range(1,8):
+                if MahjongTile.MahjongTile(i,j) in tmp:
+                    if MahjongTile.MahjongTile(i,j+1) in tmp:
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j+1)))
+                        count += 1
+                    if MahjongTile.MahjongTile(i,j+2) in tmp:
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j+2)))
+                        count += 1
+        for i in self.TILE_TYPES:
+            for j in range(1,8):
+                    if tmp.count(MahjongTile.MahjongTile(i,j))==2:
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                        count += 1
+                    if len(tmp)-count == 2:
+                        tmp.pop(0)
+                        count += 1
+        if len(tmp) == count: counts.append(count)
+
+        tiles = self.hands[:]
+        mentus = []
+        self.make_zyantou(tiles, mentus)
+        self.make_shuntus(tiles, mentus)
+        self.make_kotus(tiles, mentus)
+        tmp = tiles[:]
+        count = 0
+        for i in self.TILE_TYPES[:3]:
+            for j in range(1,8):
+                if MahjongTile.MahjongTile(i,j) in tmp:
+                    if MahjongTile.MahjongTile(i,j+1) in tmp:
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j+1)))
+                        count += 1
+                    if MahjongTile.MahjongTile(i,j+2) in tmp:
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j+2)))
+                        count += 1
+        for i in self.TILE_TYPES:
+            for j in range(1,8):
+                    if tmp.count(MahjongTile.MahjongTile(i,j))==2:
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                        count += 1
+                    if len(tmp)-count == 2:
+                        tmp.pop(0)
+                        count += 1
+        if len(tmp) == count: counts.append(count)
+
+        tmp = tiles[:]
+        count = 0
+        for i in self.TILE_TYPES:
+            for j in range(1,10):
+                if tmp.count(MahjongTile.MahjongTile(i,j))==2: count += 1
+        counts.append(7-count) #七対子用
+
+        tiles = self.hands[:]
+        tmp = []
+        tmp.append(tiles.count(MahjongTile.MahjongTile('pinzu',1)))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('pinzu',9)))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('manzu',1)))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('manzu',9)))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('souzu',1)))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('souzu',9)))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('ton')))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('nan')))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('sha')))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('pei')))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('haku')))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('hatu')))
+        tmp.append(tiles.count(MahjongTile.MahjongTile('tyun')))
+        if tmp.count(1) == 13: counts.append(1)
+        elif tmp.count(2) > 1: counts.append(13-tmp.count(1))
+        else: counts.append(13-tmp.count(1)+1)
+
+        return(min(counts))
+
 
     def is_tenpai(self):
         return(True)
