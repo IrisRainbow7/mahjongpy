@@ -86,8 +86,12 @@ class TestPlayer(unittest.TestCase):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
         self.assertEqual(p.minkans, 9)
 
+    def test_kantus(self):
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
+        self.assertEqual(p.kantus(), 9)
+
+
     def test_yakus(self):
-        print('*')#################
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS2, turn=5)
         self.assertEqual(p.yakus(), [])
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS18, is_tumo=True)
@@ -99,9 +103,113 @@ class TestPlayer(unittest.TestCase):
                 self.HANDS10, self.HANDS11, self.HANDS12, self.HANDS13, self.HANDS14, self.HANDS15, self.HANDS16, \
                 self.HANDS17, self.HANDS19]
         for i in yakus:
-            print(yakus[i])#################
             p = MahjongPlayer.MahjongPlayer(hands=hands[i])
             self.assertIn(yakus[i], p.yakus())
+
+    def test_yakus_with_melds(self):
+        h = MahjongTile.MahjongTile.make_hands_set('123', '123', '', '222', '11',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '123',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m)
+        self.assertIn('sansyokudouzyun', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('222', '222', '', '222', '11',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '222',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('sansyokudoukou', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('222', '333', '', '222', '11',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '567',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m)
+        self.assertIn('sanankou', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('111', '', '777', '', '11',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '777',checkamount=False)]
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '', '', '333',checkamount=False))
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('toitoi', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('111', '55',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('444', '', '', '', '',checkamount=False)]
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '', '999', '', '',checkamount=False))
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '', '', '', '333',checkamount=False))
+        minkans = [MahjongTile.MahjongTile.make_hands_set('4444', '', '', '', '',checkamount=False)]
+        ankans = [MahjongTile.MahjongTile.make_hands_set('', '', '9999', '', '',checkamount=False)]
+        ankans.append(MahjongTile.MahjongTile.make_hands_set('', '', '', '', '3333',checkamount=False))
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkans=minkans, ankans=ankans)
+        self.assertIn('sankantu', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('222', '345', '', '', '11222',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '', '', '333',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('syousangen', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('111999', '', '111', '', '11',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '', '444',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('honroutou', p.yakus())
+        self.assertIn('sanankou', p.yakus())
+        self.assertIn('toitoi', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('111999', '', '111', '444', '11',checkamount=False)
+        p = MahjongPlayer.MahjongPlayer(hands=h, is_tumo=True)
+        self.assertIn('honroutou', p.yakus())
+        self.assertIn('suankou', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('22', '345', '', '', '111222',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '', '', '333',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('daisangen', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('', '345', '', '11222333',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '', '444',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('syoususi', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('', '33', '', '111222333',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '', '444',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('daisusi', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('', '234444666', '', '', '22',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '888', '', '',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('ryuisou', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('', '', '', '111333', '22233',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '', '444',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('tuisou', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('11999', '111', '999', '', '',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '999', '', '',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkos=m)
+        self.assertIn('chinroutou', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('', '55',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('666', '', '', '', '',checkamount=False)]
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '', '', '', '222',checkamount=False))
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '111', '', '', '',checkamount=False))
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '', '', '', '333',checkamount=False))
+        minkans = [MahjongTile.MahjongTile.make_hands_set('6666', '', '', '', '',checkamount=False)]
+        minkans.append(MahjongTile.MahjongTile.make_hands_set('', '', '', '', '2222',checkamount=False))
+        ankans = [MahjongTile.MahjongTile.make_hands_set('', '1111', '', '', '',checkamount=False)]
+        ankans.append(MahjongTile.MahjongTile.make_hands_set('', '', '', '', '3333',checkamount=False))
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, minkans=minkans, ankans=ankans)
+        self.assertIn('sukantu', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('123456', '234', '99', '', '',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('789', '', '', '',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m)
+        self.assertIn('ikkituukan', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('123', '', '', '', '22',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '123', '', '',checkamount=False)]
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '789', '', '',checkamount=False))
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '', '999', '',checkamount=False))
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, ankans=[m[-1]])
+        self.assertIn('chanta', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('11123', '', '', '', '',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '123', '', '',checkamount=False)]
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '999', '', '',checkamount=False))
+        m.append(MahjongTile.MahjongTile.make_hands_set('', '', '789', '',checkamount=False))
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m, ankans=[m[-2]])
+        self.assertIn('zyuntyan', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('', '111456', '', '222', '11',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '678', '', '',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m)
+        self.assertIn('honitu', p.yakus())
+        h = MahjongTile.MahjongTile.make_hands_set('', '', '11122245699', '', '',checkamount=False)
+        m = [MahjongTile.MahjongTile.make_hands_set('', '', '678', '',checkamount=False)]
+        p = MahjongPlayer.MahjongPlayer(hands=h, melds=m)
+        self.assertIn('chinitu', p.yakus())
+
+
+
+
 
     def test_score_hu(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS3)
