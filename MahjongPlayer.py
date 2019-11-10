@@ -134,11 +134,11 @@ class MahjongPlayer:
         elif tmp.count(2) > 1: counts.append(13-tmp.count(1))
         else: counts.append(13-tmp.count(1)+1)
 
-        return(min(counts))
+        return(min(counts)-1)
 
 
     def is_tenpai(self):
-        return(True)
+        return(self.shanten == 0)
 
     def is_furiten(self):
         return(False)
