@@ -4,11 +4,46 @@ import MahjongPlayer
 import random
 
 class MahjongTable:
+    """
+    麻雀卓を表すクラス
+    卓のルールや情報を保持する
+
+    Attributes
+    ----------
+    tiles : list
+        場の牌山(MahjongTileのリスト)
+    wind : str
+        現在の場の風。東:'ton'　南:'nan'　東:'sha'　北:'pei'
+    kyoku : int
+        現在の局数。東1局なら1
+    honba : int
+        現在の局が何本場か
+    dora_showing_tile : MahjongTile
+        ドラ表示牌
+    dora_tile : MahjongTile
+        ドラ牌
+    ri_bou : int
+        リー棒の数
+    players : list
+        MahjongPlayer4人のリスト
+    use_akadora : bool
+        赤ドラを使用するかどうか
+    kuitan : bool
+        喰いタン(門前でないタンヤオ)ありかどうか
+    rules : dict
+        ルールを表す辞書(use_akadora, kuitan)
+    round_name_jp : str
+        局の風と数を表す文字列。"東1局"、"東3局"
+    info : str
+        round_name_jpに加え何本場かを示す文字列。"東2局1本場"
+    is_furoed : bool
+        誰か1人でもすでに鳴いたかどうか
+    """
 
     WIND_NAME_JP = {'ton':'東', 'nan':'南', 'sha':'西', 'pei':'北'}
 
     def __init__(self, tiles=[], wind="ton", kyoku=1, honba=0, dora_showing_tile=None, dora_tile=None, \
-                ri_bou=0, players=[], use_akadora=True, kuitan=True, rules={}):
+                players=[], use_akadora=True, kuitan=True, rules={}):
         self.tiles = MahjongTile.MahjongTile.make_tiles_set(use_akadora=rules.get('use_akadora', use_akadora))
         random.shuffle(self.tiles)
         self.wind = wind
@@ -16,7 +51,7 @@ class MahjongTable:
         self.honba = honba
         self.dora_showing_tile = self.tiles.pop(random.randrange(136))
         self.dora_tile = self.dora_showing_tile.next()
-        self.ri_bou = ri_bou
+        self.ri_bou = self.honba
         h1, h2, h3, h4 = self.deal_tiles()
         p1 = MahjongPlayer.MahjongPlayer(hands=h1, oya=True, wind='ton', table=self)
         p2 = MahjongPlayer.MahjongPlayer(hands=h2, wind='nan', table=self)
@@ -30,6 +65,19 @@ class MahjongTable:
         self.is_furoed = False
 
     def deal_tiles(self,oya=1):
+        """
+        配牌する
+
+        Parameters
+        ----------
+        oya : int
+            何人目のプレイヤーが親かを示す(1～4)
+
+        Returns
+        -------
+        hands : list
+            プレイヤーの手牌のリスト　*4人分。親のみ14枚他3人は13枚
+        """
         hands = [[], [], [], []]
         for i in range(4):
             for _ in range(13):
@@ -38,6 +86,14 @@ class MahjongTable:
         return(hands)
 
     def draw(self, player):
+        """
+        山から牌を引き、プレイヤーに配る
+
+        Parameters
+        ----------
+        player : MahjongPlayer
+            牌を配るプレイヤー
+        """
         draw_tile = self.tiles.pop(random.randrange(5))
         player.hands.append(draw_tile)
         player.sort()
