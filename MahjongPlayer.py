@@ -2,12 +2,53 @@ import MahjongTile
 import MahjongTable
 
 class MahjongPlayer:
+    """
+    プレイヤーを表すクラス。各プレイヤーの情報などを保持する
+
+    Attributes
+    ----------
+    hands : list
+        プレイヤーの手牌。MahjongTileのリスト
+    discards : list
+        プレイヤーの河。MahjongTileのリスト
+    melds : list
+        プレイヤーが鳴いた牌のリストのリスト。
+        ポン、カン、チーをしたときに3枚または4枚のMahjongTileのリストが追加される。
+    oya : bool
+        プレイヤーが親かどうか
+    points : int
+        プレイヤーの持ち点
+    wind : str
+        プレイヤーの自風。東:'ton'　南:'nan'　西:'sha'　北:'pei'
+    latest_tile : MahjongTile
+        一番最後に引いた牌(一番最新の牌)
+    table : MahjongTable
+        プレイヤーがゲームを行っている卓
+    turn : int
+        局が始まってから経過したターン数
+    riichi_turn : int
+        リーチした時のターン数
+    is_tumo : bool
+        ツモしたかどうか
+    id_ron : bool
+        ロンしたかどうか
+    ankans : list
+        暗槓のリスト。MahjongTile4枚のリスト(暗槓)のリスト
+    minkans :list
+        明槓のリスト。MahjongTile4枚のリスト(明槓)のリスト
+    minkos :list
+        明刻のリスト。MahjongTile3枚のリスト(明刻)のリスト
+    is_riichi : bool
+        リーチしているかどうか
+    is_doubleriichi :bool
+        和了った時にダブルリーチ(役)がつく状態かどうか
+    """
 
     TILE_TYPES = ['pinzu', 'manzu', 'souzu', 'ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
     KYOMU_TILE = MahjongTile.MahjongTile(None)
 
     def __init__(self, hands=[], discards=[], melds=[], oya=False, points=25000, wind='ton', latest_tile=KYOMU_TILE, \
-                table=None, turn=0, is_tumo=False, ankans=[], minkans=[], minkos=[]):
+                turn=0, is_tumo=False, ankans=[], minkans=[], minkos=[]):
         if len(hands)+len(sum(melds,[])) not in [13, 14]: raise ValueError('amout of hands is not 13 or 14.')
         self.hands = hands
         self.discards = discards
@@ -24,30 +65,58 @@ class MahjongPlayer:
         self.ankans = ankans
         self.minkans = minkans
         self.minkos = minkos
-        self.doubleriichi = False
+        self.is_doubleriichi = False
         self.table = None
         self.sort()
 
     def sort(self):
+        """
+        プレイヤーの手牌を種類、番号順にソートする
+
+        Notes
+        -----
+        self.hands を　破壊的に　ソートするので注意
+
+        """
         self.hands = sorted(self.hands)
 
     def hands_display(self):
+        """
+        プレイヤーの手牌すべてを実際の牌のような感じで表示
+        """
         for i in self.hands:
             print(i.display)
 
     def hands_name_jp(self):
+        """
+        プレイヤーの手牌すべての名前を表示
+        """
         for i in self.hands:
             print(i.name_jp)
 
     def discards_display(self):
+        """
+        プレイヤーの河すべてを実際の牌のような感じで表示
+        """
         for i in self.discards:
             print(i.display)
 
     def discards_name_jp(self):
+        """
+        プレイヤーの河すべての名前を表示
+        """
         for i in self.discards:
             print(i.name_jp)
 
     def shanten(self):
+        """
+        プレイヤーのシャンテン数を計算。一向聴で1、二向聴で2……　を返す
+
+        Returns
+        -------
+        count : int
+            プレイヤーのシャンテン数
+        """
         counts = [100]
 
         tiles = self.hands[:]
@@ -138,12 +207,30 @@ class MahjongPlayer:
 
 
     def is_tenpai(self):
+        """
+        Returns
+        -------
+        is_tenpai : bool
+            プレイヤーがテンパイかどうか
+        """
         return(self.shanten == 0)
 
     def is_furiten(self):
+        """
+        Returns
+        -------
+        is_furiten : bool
+            プレイヤーがフリテン状態かどうか
+        """
         return(False)
 
     def is_kyusyukyuhai(self):
+        """
+        Returns
+        -------
+        is_kyusyukyuhai : bool
+            手牌が九種九牌かどうか
+        """
         count = 0
         for i in self.hands:
             if i.number in [1, 9, None]:
@@ -151,6 +238,12 @@ class MahjongPlayer:
         return(count > 8)
 
     def is_hora(self):
+        """
+        Returns
+        -------
+        is_hora : bool
+            プレイヤーの手牌が和了形かどうか
+        """
         is_hora = False
 
         tiles = self.hands[:]
@@ -169,6 +262,14 @@ class MahjongPlayer:
         return(is_hora or self.is_chitoitu() or self.is_kokushimusou())
 
     def zyantou(self):
+        """
+        プレイヤーの手牌の内、雀頭を返す
+
+        Returns
+        -------
+        tiles : list
+            雀頭(2枚のMahjongTileのリスト)。雀頭がない場合ダミータイル(self.KYOMU_TILE)1枚のみのリストが返る
+        """
         is_hora = False
 
         tiles = self.hands[:]
@@ -189,6 +290,20 @@ class MahjongPlayer:
         return([self.KYOMU_TILE])
 
     def make_shuntus(self, tiles, mentus):
+        """
+        順子を作る
+
+        Parameters
+        ----------
+        tiles : list
+            未処理のMahjongTileのリスト(手牌)
+        mentus: list
+            処理済みのMahjongTileのリスト。このリストに順子が、MahjongTile3枚のリストとして追加される
+
+        Notes
+        -----
+        引数のtiles、およびmentusを　破壊的に　変更するので注意
+        """
         for _ in range(2):
             for i in range(1,8):
                 for j in self.TILE_TYPES[:3]:
@@ -200,6 +315,20 @@ class MahjongPlayer:
                         mentus.append(tmp)
 
     def make_kotus(self, tiles, mentus):
+        """
+        刻子を作る
+
+        Parameters
+        ----------
+        tiles : list
+            未処理のMahjongTileのリスト(手牌)
+        mentus: list
+            処理済みのMahjongTileのリスト。このリストに刻子が、MahjongTile3枚のリストとして追加される
+
+        Notes
+        -----
+        引数のtiles、およびmentusを　破壊的に　変更するので注意
+        """
         for i in range(1,10):
             for j in self.TILE_TYPES:
                 if tiles.count(MahjongTile.MahjongTile(j,i)) == 3:
@@ -209,6 +338,20 @@ class MahjongPlayer:
                     mentus.append(tmp)
 
     def make_zyantou(self, tiles, mentus):
+        """
+        雀頭を作る
+
+        Parameters
+        ----------
+        tiles : list
+            未処理のMahjongTileのリスト(手牌)
+        mentus: list
+            処理済みのMahjongTileのリスト。このリストに雀頭が、MahjongTile2枚のリストとして追加される
+
+        Notes
+        -----
+        引数のtiles、およびmentusを　破壊的に　変更するので注意
+        """
         for i in range(1,10):
             for j in self.TILE_TYPES:
                 if tiles.count(MahjongTile.MahjongTile(j,i)) == 2:
@@ -219,6 +362,20 @@ class MahjongPlayer:
                     return(None)
 
     def is_zyantou(self, tiles, mentus):
+        """
+        残りの牌が雀頭かどうかを判定する
+
+        Parameters
+        ----------
+        tiles : list
+            未処理のMahjongTileのリスト
+        mentus: list
+            処理済みのMahjongTileのリスト。雀頭判定されたとき、MahjongTile2枚がリストとして追加される
+
+        Notes
+        -----
+        引数のtiles、およびmentusを　破壊的に　変更するので注意
+        """
         if len(tiles) == 2 and tiles[0] == tiles[1]:
             mentus.append([tiles[0], tiles[1]])
             return(True)
@@ -226,6 +383,12 @@ class MahjongPlayer:
             return(False)
 
     def is_chitoitu(self):
+        """
+        Returns
+        -------
+        is_chitoitu : bool
+            プレイヤーの手牌が七対子かどうか
+        """
         if not self.is_menzen: return(False)
         mentus = []
         tiles = self.hands[:]
@@ -239,6 +402,12 @@ class MahjongPlayer:
         return(len(tiles) == 0)
 
     def is_kokushimusou(self):
+        """
+        Returns
+        -------
+        is_kokushimusou : bool
+            プレイヤーの手牌が国士無双かどうか
+        """
         if not self.is_menzen: return(False)
         tmp = []
         tiles = self.hands[:]
@@ -258,6 +427,12 @@ class MahjongPlayer:
         return(tmp.count(1) == 12 and tmp.count(2) == 1)
 
     def is_chanta(self):
+        """
+        Returns
+        -------
+        is_kokushimusou : bool
+            プレイヤーの手牌がチャンタかどうか
+        """
         is_hora = False
 
         tiles = self.hands[:] + sum(self.melds, [])
@@ -290,6 +465,12 @@ class MahjongPlayer:
         return(False)
 
     def is_zyuntyan(self):
+        """
+        Returns
+        -------
+        is_kokushimusou : bool
+            プレイヤーの手牌がジュンチャンかどうか
+        """
         is_hora = False
 
         tiles = self.hands[:] + sum(self.melds, [])
@@ -324,6 +505,12 @@ class MahjongPlayer:
 
 
     def is_ipeikou(self, tiles, mentus):
+        """
+        Returns
+        -------
+        is_kokushimusou : bool
+            プレイヤーの手牌が一盃口かどうか
+        """
         if not self.is_menzen: return(False)
         count = []
         for _ in range(2):
@@ -339,6 +526,12 @@ class MahjongPlayer:
         return(count == [5,2])
 
     def is_ryanpeikou(self, tiles, mentus):
+        """
+        Returns
+        -------
+        is_kokushimusou : bool
+            プレイヤーの手牌が二盃口かどうか
+        """
         if not self.is_menzen: return(False)
         count = []
         for _ in range(2):
@@ -354,42 +547,101 @@ class MahjongPlayer:
         return(count == [8,2])
 
 
-
-
     def displayed_doras(self, dora):
+        """
+        手牌の内ドラ表示牌の次の牌の数
+
+        Parameters
+        ----------
+        dora : MahjongTile
+            ドラ牌
+
+        Returns
+        -------
+        count : int
+            手牌のドラ牌の数
+        """
         count = 0
         for i in self.hands:
             if i == dora: count += 1
         return(count)
 
     def akadoras(self):
+        """
+        手牌の赤ドラの数
+
+        Returns
+        count : int
+            手牌の赤ドラの数
+        """
         count = 0
         for i in self.hands:
             if i.akadora: count += 1
         return(count)
 
     def doras(self):
+        """
+        Returns
+        count : int
+            手牌の内、ドラ表示牌の次の牌の数と、赤ドラの数の和
+        """
         return(self.displayed_doras() + self.akadoras())
 
     def shuntus(self):
+        """
+        手牌の内、順子のリストを返す
+
+        Returns
+        -------
+        tiles : list
+            手牌の順子のリスト。順子1つごとにMahjongTile3枚のリストになっているためリストのリストが返る
+        """
         tiles = self.hands[:]
         mentus = []
         self.make_shuntus(tiles, mentus)
         return(mentus)
 
     def ankos(self):
+        """
+        手牌の内、暗刻のリストを返す
+
+        Returns
+        -------
+        tiles : list
+            手牌の暗刻のリスト。暗刻1つごとにMahjongTile3枚のリストになっているためリストのリストが返る
+        """
         tiles = self.hands[:]
         mentus = []
         self.make_kotus(tiles, mentus)
         return(mentus)
 
     def kotus(self):
+        """
+        Returns
+        -------
+        tiles : list
+            手牌の刻子のリスト。刻子1つごとにMahjongTile3枚のリストになっているためリストのリストが返る
+        """
         return(self.ankos() + self.minkos)
 
     def kantus(self):
+        """
+        Returns
+        -------
+        tiles : list
+            手牌の槓子のリスト。槓子1つごとにMahjongTile3枚のリストになっているためリストのリストが返る
+        """
         return(self.ankans + self.minkans)
 
     def yakus(self):
+        """
+        プレイヤーの手牌でできる役のリストを返す
+
+        Returns
+        -------
+        yakus : list
+            役のリスト。役の名前(適当ローマ字表記)が入っている
+        """
         if not self.is_hora: raise RuntimeError('Not hora')
         yakus = []
 
@@ -426,7 +678,7 @@ class MahjongPlayer:
         if len(table_tiles) == 14 and self.is_ron: yakus.append('houtei')
         if False: yakus.append('rinsyankaihou')
         if False: yakus.append('tyankan')
-        if self.doubleriichi: yakus.append('doubleriichi')
+        if self.is_doubleriichi: yakus.append('doubleriichi')
         if self.is_chitoitu(): yakus.append('chitoitu')
         tiles = self.hands[:] + sum(self.melds, [])
         judge = False
@@ -496,38 +748,104 @@ class MahjongPlayer:
         return(yakus)
 
     def score_hu(self):
+        """
+        Returns
+        -------
+        score_fu : int
+            手牌の符数
+        """
         return(30)
 
     def score_han(self):
+        """
+        Returns
+        -------
+        score_fu : int
+            手牌の翻数
+        """
         return(3)
 
     def is_mangan(self):
+        """
+        Returns
+        -------
+        is_mangan : bool
+            満貫かどうか
+        """
         return(False)
 
     def is_haneman(self):
+        """
+        Returns
+        -------
+        is_haneman : bool
+            跳満かどうか
+        """
         return(False)
 
     def is_baiman(self):
+        """
+        Returns
+        -------
+        is_baiman : bool
+            倍満かどうか
+        """
         return(False)
 
     def is_sanbaiman(self):
+        """
+        Returns
+        -------
+        is_sanbaiman : bool
+            三満貫かどうか
+        """
         return(False)
 
     def is_kazoeyakuman(self):
+        """
+        Returns
+        -------
+        is_kazoeyakuman : bool
+            数え役満かどうか
+        """
         return(False)
 
     def score(self):
+        """
+        Returns
+        -------
+        score : int
+            手牌の点数
+        """
         if not self.is_hora: raise RuntimeError('Not hora')
         return(1000)
 
     def payed_score(self):
+        """
+        Returns
+        -------
+        score : list
+            他家に払ってもらう手牌の点数のリスト。[親に払ってもらう点数, 子に払ってもらう点数]
+        """
         if not self.is_hora: raise RuntimeError('Not hora')
         return([1000, 500])
 
     def is_menzen(self):
+        """
+        Returns
+        -------
+        is_menzen : bool
+            門前かどうか
+        """
         return(len(self.melds)==0)
 
     def is_wait_ryanmen(self):
+        """
+        Returns
+        -------
+        is_wait_ryanmen : bool
+            両面待ちかどうか
+        """
         tiles = []
         if latest_tile.numer > 2:
             tiles.append(MahjongTile.MahjongTile(latest_tile.tile_type, latest_tile.number-2))
@@ -536,6 +854,15 @@ class MahjongPlayer:
         return(any([(i in self.hands) for i in tiles]))
 
     def discard(self, tile):
+        """
+        牌を捨てる
+
+        Parameters
+        ----------
+        tile : MahjongTile
+            捨てる牌
+
+        """
         if not tile in self.hands:
             raise RuntimeError('does NOT have such tile')
         else:
@@ -543,18 +870,36 @@ class MahjongPlayer:
             self.discards.append(self.hands.pop(self.hands.index(MahjongTile.MahjongTile(tile.tile_type,tile.number))))
 
     def riichi(self):
+        """
+        リーチする
+
+        Raises
+        ------
+        RuntimeError
+            門前でないと鳴けない
+        """
         if not self.is_menzen():raise RuntimeError('Can Riichi ONLY when menzen')
+        if not self.is_tenpai():raise RuntimeError('Can Riichi ONLY when tenpai')
         is_furoed = False if self.table is None else self.table.is_furoed
         if self.turn == 0 and is_furoed: self.doubleriichi = True
         self.riichi_turn = self.turn
         self.is_riichi = True
 
     def kan(self):
+        """
+        カンする
+        """
         return(None)
 
     def pon(self):
+        """
+        ポンする
+        """
         return(None)
 
     def chi(self):
+        """
+        チーする
+        """
         return(None)
 
