@@ -896,11 +896,12 @@ class MahjongPlayer:
             カンする牌
         """
         p = None
-        for i in self.table.players:
+        players = [None] if self.table is None else self.table.players
+        for i in players:
             if i.discards[-1] == tile:
                 p = i
         count = self.hands.count(tile)
-        if p is None and count != 4: raise RuntimeError('Nobody discard such tile')
+        if p is None and count != 4: raise RuntimeError('Nobody discards such tile')
         if count != 3: raise RuntimeError('Lack of amount of tiles for kan')
         if p is None: #暗槓
             for _ in range(4):
@@ -953,7 +954,19 @@ class MahjongPlayer:
         tile : MahjongTile
             ポンする牌
         """
-        return(None)
+        p = None
+        players = [None] if self.table is None else self.table.players
+        for i in players:
+            if i.discards[-1] == tile:
+                p = i
+        count = self.hands.count(tile)
+        if p is None: raise RuntimeError('Nobody discards such tile')
+        if count != 2: raise RuntimeError('You DON\'T have toitu of such tile')
+        tmp = []
+        for _ in range(2):
+            tmp.append(self.hands.pop(self.hands.index(tile)))
+        self.melds.append(tmp)
+        self.minkos.append(tmp)
 
     def chi(self, tile):
         """
@@ -964,5 +977,27 @@ class MahjongPlayer:
         tile : MahjongTile
             チーする牌
         """
-        return(None)
+        p = None
+        players = [None] if self.table is None else self.table.players
+        for i in players:
+            if i.discards[-1] == tile:
+                p = i
+        tiles = self.hands + [tile]
+        shuntus = []
+        self.make_shuntus(tiles, shuntus)
+        tmp = []
+        for i in shuntus:
+            for j in i:
+                if j == tile:
+                    tmp = i
+        tmp2 = []
+        for i in tmp:
+            if i == tile:
+                tmp2.append(i)
+            else:
+                tmp2.append(self.hands.pop(self.hands.index(i)))
+        self.melds.append(tmp2)
+
+
+
 
