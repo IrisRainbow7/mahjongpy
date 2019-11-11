@@ -18,20 +18,22 @@ class MahjongTable:
         現在の局数。東1局なら1
     honba : int
         現在の局が何本場か
-    dora_showing_tile : MahjongTile
-        ドラ表示牌
-    dora_tile : MahjongTile
-        ドラ牌
+    dora_showing_tiles : list
+        ドラ表示牌(MahjongTile)のリスト
+    dora_tiles : list
+        ドラ牌(MahjongTile)のリスト
     ri_bou : int
         リー棒の数
     players : list
         MahjongPlayer4人のリスト
     use_akadora : bool
-        赤ドラを使用するかどうか
+        赤ドラを使用するかどうか(デフォルト:True)
     kuitan : bool
-        喰いタン(門前でないタンヤオ)ありかどうか
+        喰いタン(門前でないタンヤオ)ありかどうか(デフォルト:True)
+    kandora_sokumekuri : bool
+        槓ドラ即めくりするかどうか(デフォルト:False)
     rules : dict
-        ルールを表す辞書(use_akadora, kuitan)
+        ルールを表す辞書(use_akadora, kuitan, kandora_sokumekuri)
     round_name_jp : str
         局の風と数を表す文字列。"東1局"、"東3局"
     info : str
@@ -42,15 +44,17 @@ class MahjongTable:
 
     WIND_NAME_JP = {'ton':'東', 'nan':'南', 'sha':'西', 'pei':'北'}
 
-    def __init__(self, tiles=[], wind="ton", kyoku=1, honba=0, dora_showing_tile=None, dora_tile=None, \
-                players=[], use_akadora=True, kuitan=True, rules={}):
+    def __init__(self, tiles=[], wind="ton", kyoku=1, honba=0, dora_showing_tiles=[], dora_tiles=[], \
+                players=[], use_akadora=True, kuitan=True, kandora_sokumekuri=False, rules={}):
         self.tiles = MahjongTile.MahjongTile.make_tiles_set(use_akadora=rules.get('use_akadora', use_akadora))
         random.shuffle(self.tiles)
         self.wind = wind
         self.kyoku = kyoku
         self.honba = honba
-        self.dora_showing_tile = self.tiles.pop(random.randrange(136))
-        self.dora_tile = self.dora_showing_tile.next()
+        self.dora_showing_tiles = dora_showing_tiles
+        self.dora_tiles = dora_tiles
+        self.dora_showing_tiles.append(self.tiles.pop(random.randrange(136)))
+        self.dora_tiles.append(self.dora_showing_tiles[0].next())
         self.ri_bou = self.honba
         h1, h2, h3, h4 = self.deal_tiles()
         p1 = MahjongPlayer.MahjongPlayer(hands=h1, oya=True, wind='ton', table=self)
@@ -60,6 +64,7 @@ class MahjongTable:
         self.players = [p1, p2, p3, p4]
         self.use_akadora = rules.get('use_akadora', use_akadora)
         self.kuitan = rules.get('kuitan', kuitan)
+        self.kandora_sokumekuri = rules.get('kandora_sokumekuri', kandora_sokumekuri)
         self.round_name_jp = self.WIND_NAME_JP[self.wind] + str(kyoku) + '局'
         self.info = self.round_name_jp + str(self.honba) + '本場'
         self.is_furoed = False
@@ -97,5 +102,12 @@ class MahjongTable:
         draw_tile = self.tiles.pop(random.randrange(5))
         player.hands.append(draw_tile)
         player.sort()
+
+    def add_kandora(self):
+        """
+        カンドラをめくる
+        """
+        self.dora_showing_tiles.append(self.tiles.pop(random.randrange(5)))
+        self.dora_tiles.append(self.dora_showing_tiles[-1].next())
 
 

@@ -40,15 +40,17 @@ class MahjongPlayer:
         明刻のリスト。MahjongTile3枚のリスト(明刻)のリスト
     is_riichi : bool
         リーチしているかどうか
-    is_doubleriichi :bool
+    is_doubleriichi : bool
         和了った時にダブルリーチ(役)がつく状態かどうか
+    is_rinsyankaihou : bool
+        和了った時に嶺上開花(役)がつく状態かどうか
     """
 
     TILE_TYPES = ['pinzu', 'manzu', 'souzu', 'ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
     KYOMU_TILE = MahjongTile.MahjongTile(None)
 
     def __init__(self, hands=[], discards=[], melds=[], oya=False, points=25000, wind='ton', latest_tile=KYOMU_TILE, \
-                turn=0, is_tumo=False, ankans=[], minkans=[], minkos=[]):
+                table=None, turn=0, is_tumo=False, ankans=[], minkans=[], minkos=[]):
         if len(hands)+len(sum(melds,[])) not in [13, 14]: raise ValueError('amout of hands is not 13 or 14.')
         self.hands = hands
         self.discards = discards
@@ -66,7 +68,8 @@ class MahjongPlayer:
         self.minkans = minkans
         self.minkos = minkos
         self.is_doubleriichi = False
-        self.table = None
+        self.is_rinsyankaihou = False
+        self.table = table
         self.sort()
 
     def sort(self):
@@ -547,14 +550,9 @@ class MahjongPlayer:
         return(count == [8,2])
 
 
-    def displayed_doras(self, dora):
+    def displayed_doras(self):
         """
         手牌の内ドラ表示牌の次の牌の数
-
-        Parameters
-        ----------
-        dora : MahjongTile
-            ドラ牌
 
         Returns
         -------
@@ -562,8 +560,10 @@ class MahjongPlayer:
             手牌のドラ牌の数
         """
         count = 0
+        doras = None if self.table is None else self.table.dora_tiles
         for i in self.hands:
-            if i == dora: count += 1
+            for j in doras:
+                if i == j: count += 1
         return(count)
 
     def akadoras(self):
@@ -877,6 +877,7 @@ class MahjongPlayer:
         ------
         RuntimeError
             門前でないと鳴けない
+            テンパイでないと鳴けない
         """
         if not self.is_menzen():raise RuntimeError('Can Riichi ONLY when menzen')
         if not self.is_tenpai():raise RuntimeError('Can Riichi ONLY when tenpai')
@@ -885,21 +886,83 @@ class MahjongPlayer:
         self.riichi_turn = self.turn
         self.is_riichi = True
 
-    def kan(self):
+    def kan(self, tile):
         """
-        カンする
-        """
-        return(None)
+        カンする(暗槓または大明槓)
 
-    def pon(self):
+        Parameters
+        ----------
+        tile : MahjongTile
+            カンする牌
+        """
+        p = None
+        for i in self.table.players:
+            if i.discards[-1] == tile:
+                p = i
+        count = self.hands.count(tile)
+        if p is None and count != 4: raise RuntimeError('Nobody discard such tile')
+        if count != 3: raise RuntimeError('Lack of amount of tiles for kan')
+        if p is None: #暗槓
+            for _ in range(4):
+                tmp.append(self.hands.pop(self.hands.index(tile)))
+            self.ankans.append(tmp)
+            self.table.draw(self)
+            if is_hora:self.is_rinsyankaihou = True
+            self.table.add_kandora()
+            #self.discard(SOME_TILE)
+        else:
+            for _ in range(3): #大明槓
+                tmp.append(self.hands.pop(self.hands.index(tile)))
+            self.minkans.append(tmp)
+            self.table.draw(self)
+            if is_hora:self.is_rinsyankaihou = True
+            if self.table.kandora_sokumekuri:
+                self.table.add_kandora()
+                #self.discard(SOME_TILE)
+            else:
+                pass
+                #self.discard(SOME_TILE)
+                #self.table.add_kandora()
+
+    def kakan(self, tile):
+        """
+        カンする(加槓(小明槓))
+
+        Parameters
+        ----------
+        tile : MahjongTile
+            カンする牌
+        """
+        if not tile in self.hands: raise RuntimeError('You DON\'T have such tile')
+        flag = False
+        index = None
+        for i in range(len(self.minkos)):
+            if self.minkos[i][0] == tile:
+                flag = True
+                index = i
+        if not flag: raise RuntimeError('You DON\'T have such tile of minko')
+        tmp = self.hands.pop(self.hands.index(tile))
+        self.minkans.append(self.minkos[i]+[tile])
+
+    def pon(self, tile):
         """
         ポンする
+
+        Parameters
+        ----------
+        tile : MahjongTile
+            ポンする牌
         """
         return(None)
 
-    def chi(self):
+    def chi(self, tile):
         """
         チーする
+
+        Parameters
+        ----------
+        tile : MahjongTile
+            チーする牌
         """
         return(None)
 

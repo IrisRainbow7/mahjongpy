@@ -13,14 +13,17 @@ class TestTable(unittest.TestCase):
         self.assertEqual(t.ri_bou, 0)
         self.assertTrue(t.use_akadora)
         self.assertTrue(t.kuitan)
+        self.assertFalse(t.kandora_sokumekuri)
 
     def test_change_rules(self):
-        t = MahjongTable.MahjongTable(use_akadora=False, kuitan=False)
+        t = MahjongTable.MahjongTable(use_akadora=False, kuitan=False, kandora_sokumekuri=True)
         self.assertFalse(t.use_akadora)
         self.assertFalse(t.kuitan)
-        t = MahjongTable.MahjongTable(rules={'use_akadora':False, 'kuitan':False})
+        self.assertTrue(t.kandora_sokumekuri)
+        t = MahjongTable.MahjongTable(rules={'use_akadora':False, 'kuitan':False, 'kandora_sokumekuri':True})
         self.assertFalse(t.use_akadora)
         self.assertFalse(t.kuitan)
+        self.assertTrue(t.kandora_sokumekuri)
 
     def test_deal(self):
         t = MahjongTable.MahjongTable()

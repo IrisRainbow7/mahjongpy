@@ -399,7 +399,17 @@ class TestPlayer(unittest.TestCase):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
         self.assertFalse(p.is_wait_ryanmen())
 
+    def test_kan(self):
+        pass
 
+    def test_kakan(self):
+        pass
+
+    def test_pon(self):
+        pass
+
+    def test_chi(self):
+        pass
 
 
 
