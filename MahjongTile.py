@@ -1,4 +1,16 @@
 class MahjongTile:
+    """
+    麻雀牌を表すクラス
+
+    Attributes
+    ----------
+    tile_type : str
+        牌の種類。萬子:manzu　pinzu:筒子　souzu:索子　ton:東　nan:南　sha:東　pei:北　haku:白　hatu:發　tyun:中
+    number : int
+        牌の数字。字牌の場合はNone
+    akadora : bool
+        赤ドラかどうか
+    """
 
     TILE_TYPES = ['manzu', 'pinzu', 'souzu', 'ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
     TILE_TYPES_ZIHAI = ['ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
@@ -23,6 +35,19 @@ class MahjongTile:
 
     @classmethod
     def make_tiles_set(cls, use_akadora=True):
+        """
+        1局で使用する麻雀牌34種136枚のセットを生成
+
+        Parameters
+        ----------
+        use_akadora : bool
+            赤ドラを入れるかどうか
+
+        Returns
+        -------
+        tiles : list
+            MahjongTile136枚のリスト
+        """
         tiles = []
         for _ in range(4):
             for i in range(1,10):
@@ -47,6 +72,50 @@ class MahjongTile:
 
     @classmethod
     def make_hands_set(cls, man='', sou='', pin='', wind='', zihai='', checkamount=True):
+        """
+        指定された種類と枚数の牌のリスト(手牌)を作成する
+
+        Parameters
+        ----------
+        man : str
+            萬子の種類と枚数。種類(数字)を必要枚数分並べる。
+            例:一萬2枚を五萬と六萬と七萬　->　"11567"
+        sou : str
+            索子の種類と枚数
+            例:二索3枚と九索3枚　->　"222999"
+        pin : str
+            筒子の枚数と種類
+            例:一筒から九筒まで1枚ずつ　->　"123456789"
+        wind : str
+            風牌の種類と枚数。東南西北の順で1～4で表す
+            例:東2枚と北3枚　->　"11444"
+        zihai : str
+            字牌の三元牌の種類と枚数。白發中の順で1～4で表す
+            例:白3枚と發3枚　->　"111222"
+        checkamount : bool
+            枚数チェックをするかどうか。デフォルトTrue
+            13枚または14枚でない場合例外を投げる(手牌生成するとき用)
+
+        Returns
+        -------
+        tiles : list
+            MahjongTileのリスト
+
+        Raises
+        ------
+        ValueError
+            牌の枚数が13または14でないとき(checkamount=Falseで枚数が足りなくても無視して生成)
+
+        Examples
+        --------
+        >>> hands_pinfu = MahjongTile.MahjongTile.make_hands_set('22345', '567', '123567') #平和
+        >>> hands_chitoitu = MahjongTile.MahjongTile.make_hands_set('1155', '77', '3399', '22', '33') #七対子
+        >>> hands_daisangen = MahjongTile.MahjongTile.make_hands_set('123', '77', '', '', '111222333') #大三元
+        >>> hands_kokushi = MahjongTile.MahjongTile.make_hands_set('19', '19', '19', '1234', '1233') #国士無双
+        >>> hands_lack_of_amout = MahjongTile.MahjongTile.make_hands_set('123', '456', '789') #枚数不足
+        ValueError
+        >>> hands_lack_of_amout = MahjongTile.MahjongTile.make_hands_set('123', '456', '789', checkamount=False)
+        """
         WIND_TILES = {'1':'ton', '2':'nan', '3':'sha', '4':'pei'}
         ZIHAI_TILES = {'1':'haku', '2':'hatu', '3':'tyun'}
         if checkamount:
@@ -67,6 +136,14 @@ class MahjongTile:
 
 
     def next(self):
+        """
+        数字が次の牌を返す。字牌の場合は次の種類の牌。ドラ表示牌からドラ牌求めるときのやつ
+
+        Returns
+        -------
+        tile : MahjongTile
+            自身の次の牌
+        """
         if self.number is not None:
             new_number = self.number + 1
             if new_number == 10: new_number = 1
