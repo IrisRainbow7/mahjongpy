@@ -101,6 +101,7 @@ class MahjongTable:
         """
         draw_tile = self.tiles.pop(random.randrange(5))
         player.hands.append(draw_tile)
+        player.latest_tile = draw_tile
         player.sort()
 
     def add_kandora(self):

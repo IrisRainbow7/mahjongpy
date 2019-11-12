@@ -747,14 +747,54 @@ class MahjongPlayer:
 
         return(yakus)
 
-    def score_hu(self):
+    def score_fu(self):
         """
         Returns
         -------
         score_fu : int
             手牌の符数
         """
-        return(30)
+        yakus = self.yakus()
+        if is_tumo and 'pinfu' in yakus: return(20)
+        if 'chitoitu' in yakus: return(25)
+
+        score_fu = 20
+
+        if is_menzen and is_ron: score_fu += 10
+        elif is_tumo: score_fu += 2
+
+        for i in self.minkos:
+            if i[0].number in range(2,9):
+                score_fu += 2
+            else:
+                score_fu += 4
+        ankos = []
+        self.make_kotus(self.hands[:], ankos)
+        for i in ankos:
+            if i[0].number in range(2,9):
+                score_fu += 4
+            else:
+                score_fu += 8
+         for i in self.minkans:
+            if i[0].number in range(2,9):
+                score_fu += 8
+            else:
+                score_fu += 16
+         for i in self.ankans:
+            if i[0].number in range(2,9):
+                score_fu += 16
+            else:
+                score_fu += 32
+        table_wind = "" if self.table is None else self.table.wind
+        if self.zyantou[0].tile_type in ['haku', 'hatu', 'tyun', self.wind, table_wind]:
+            score_fu += 2
+        if (not is_wait_ryanmen()) and (not is_wait_syabo()):
+            score_fu += 2
+
+        score_fu = ((score_fu // 10)+1)*10
+        score_fu = max(30, score_fu)
+
+        return(score_fu)
 
     def score_han(self):
         """
@@ -763,7 +803,30 @@ class MahjongPlayer:
         score_fu : int
             手牌の翻数
         """
-        return(3)
+        yaku_hans =  {'riichi':1, 'ippatu':1, 'menzentumo':1, 'pinfu':1, 'tanyao':1, 'ipeikou':1, 'yakuhai':1, \
+                    'rinsyankaihou':1, 'haitei':1, 'houtei':1, 'tyankan':1, 'doubleriichi':2, 'chanta':2, \
+                    'ikkituukan':2, 'sansyokudouzyun':2, 'sansyokudoukou':2, 'sanankou':2, 'sankantu':2, \
+                    'toitoi':2, 'chitoitu':2, 'zyuntyan':3, 'ryanpeikou':3, 'honitu':3, 'honroutou':4, \
+                    'syousangen':4, 'chinitu':6}
+        yaku_hans_furoed = yaku_hans[:]
+        yaku_hans_furoed['tyankan'] = 1
+        yaku_hans_furoed['ikkituukan'] = 1
+        yaku_hans_furoed['sansyokudouzyun'] = 1
+        yaku_hans_furoed['zyuntyan'] = 2
+        yaku_hans_furoed['honitu'] = 2
+        yaku_hans_furoed['chinitu'] = 5
+        score_han = 0
+        yakus = self.yakus()
+        if is_menzen:
+            for i in yakus:
+                score_han += yaku_hans[i]
+        else:
+            for i in yakus:
+                score_han += yaku_hans_furoed[i]
+
+        score_han += self.doras()
+
+        return(score_han)
 
     def is_mangan(self):
         """
@@ -772,7 +835,9 @@ class MahjongPlayer:
         is_mangan : bool
             満貫かどうか
         """
-        return(False)
+        fu = self.score_fu
+        han = self.score_han
+        return((han==3 and fu> 69) or (han==4 and fu>39) or h(an==5))
 
     def is_haneman(self):
         """
@@ -781,7 +846,7 @@ class MahjongPlayer:
         is_haneman : bool
             跳満かどうか
         """
-        return(False)
+        return(self.score_han in [6,7])
 
     def is_baiman(self):
         """
@@ -790,16 +855,16 @@ class MahjongPlayer:
         is_baiman : bool
             倍満かどうか
         """
-        return(False)
+        return(self.score_han in [8,9,10])
 
     def is_sanbaiman(self):
         """
         Returns
         -------
         is_sanbaiman : bool
-            三満貫かどうか
+            三倍満かどうか
         """
-        return(False)
+        return(self.score_han in [11,12,13])
 
     def is_kazoeyakuman(self):
         """
@@ -808,27 +873,110 @@ class MahjongPlayer:
         is_kazoeyakuman : bool
             数え役満かどうか
         """
-        return(False)
+        return(self.score_han > 12)
+
+    def yakuman_count(self):
+        """
+        Returns
+        -------
+        count : int
+            役満の役の数
+        """
+        count = 0
+        for i in self.yakus()
+            if i in ['suankou', 'daisangen', 'kokushimusou', 'ryuisou', 'tuisou', 'chinroutou', 'sukantu', \
+                    'syoususi', 'daisusi', 'tyurenboutou', 'chihou', 'tenhou']:
+                count += 1
+        return(count)
+
+    def is_yakuman(self):
+        """
+        Returns
+        -------
+        is_sanbaiman : bool
+            役満かどうか
+        """
+        return(self.yakuman_count()==1)
+
+    def is_doubleyakuman(self):
+        """
+        Returns
+        -------
+        is_sanbaiman : bool
+            ダブル役満かどうか
+        """
+        return(self.yakuman_count()==2)
+
+    def is_tripleyakuman(self):
+        """
+        Returns
+        -------
+        is_sanbaiman : bool
+            トリプル役満かどうか
+        """
+        return(self.yakuman_count()==3)
+
+    def score_without_tsumibo(self):
+        """
+        Returns
+        -------
+        score : int
+            手牌の点数(場の積み棒分の点数を除く)
+        """
+        if not self.is_hora: raise RuntimeError('Not hora')
+        SCORE_OYA = [[0,0,1500,2000,2400,2900,3400,3900,4400,4800,5300], \
+                     [2100,2400,2900,3900,4800,5800,6800,7700,8700,9600,10600], \
+                     [3900,4800,5800,7700,9600,11600]+[12000]*5], \
+                     [7800,9600,11600]+[12000]*8], \
+                     [12000],[18000]*2,[24000]*3,[36000]*2,[48000]*10]
+        SCORE_KO = [[0,0,1000,1300,1600,2000,2300,2600,2900,3200,3600], \
+                    [1500,1600,2000,2600,3200,3900,4500,5200,5800,6400,7100], \
+                    [2700,3200,3900,5200,6400,7700]+[8000]*5], \
+                    [5200,6400,7700]+[8000]*8], \
+                    [8000],[12000]*2,[16000]*3,[24000]*2,[32000]*10]
+        fu_index = [20,25] + [i*10 for i in range(3,12)].index(self.score_han)
+        if self.oya:
+            score_all = SCORE_OYA[self.score_han-1][fu_index]
+        else:
+            score_all = SCORE_KO[self.score_han-1][fu_index]
+        return(score_all)
 
     def score(self):
         """
         Returns
         -------
         score : int
-            手牌の点数
+            手牌の点数(積み棒分を含む)
         """
-        if not self.is_hora: raise RuntimeError('Not hora')
-        return(1000)
+        return(self.score_without_tsumibo() + self.honba*300)
 
     def payed_score(self):
         """
         Returns
         -------
         score : list
-            他家に払ってもらう手牌の点数のリスト。[親に払ってもらう点数, 子に払ってもらう点数]
+            他家に払ってもらう手牌の点数のリスト。
+            [ロンした時に振り込んだ人に払ってもらう点数, 親に払ってもらう点数, 子に払ってもらう点数]
         """
+        score = self.score_without_tsumibo()
         if not self.is_hora: raise RuntimeError('Not hora')
-        return([1000, 500])
+        if self.is_ron: return([self.score(), 0, 0])
+        elif self.oya:
+            tmp = ((score/100)//3)*100
+            if score % 3 != 0:
+                tmp += 100
+            tmp += honba*100
+            return([0, 0, tmp])
+        else:
+            tmp_oya = ((score/100)//2)*100
+            if score % 2 != 0:
+                tmp_oya += 100
+            tmp_oya += 100
+            tmp_ko = ((score/100)//4)*100
+            if score % 4 != 0:
+                tmp_ko += 100
+            tmp_ko += 100
+            return([0, tmp_oya, tmp_ko])
 
     def is_menzen(self):
         """
@@ -847,11 +995,20 @@ class MahjongPlayer:
             両面待ちかどうか
         """
         tiles = []
-        if latest_tile.numer > 2:
-            tiles.append(MahjongTile.MahjongTile(latest_tile.tile_type, latest_tile.number-2))
-        elif latest_tile.number < 8:
-            tiles.append(MahjongTile.MahjongTile(latest_tile.tile_type, latest_tile.number+2))
+        if self.latest_tile.numer > 2:
+            tiles.append(MahjongTile.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number-2))
+        elif self.latest_tile.number < 8:
+            tiles.append(MahjongTile.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number+2))
         return(any([(i in self.hands) for i in tiles]))
+
+    def is_wait_syabo(self):
+        """
+        Returns
+        -------
+        is_wait_syabo : bool
+            シャボ待ちかどうか
+        """
+        return(self.hands.count(self.latest_tile) == 3)
 
     def discard(self, tile):
         """
