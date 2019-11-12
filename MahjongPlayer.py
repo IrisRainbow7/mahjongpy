@@ -775,12 +775,12 @@ class MahjongPlayer:
                 score_fu += 4
             else:
                 score_fu += 8
-         for i in self.minkans:
+        for i in self.minkans:
             if i[0].number in range(2,9):
                 score_fu += 8
             else:
                 score_fu += 16
-         for i in self.ankans:
+        for i in self.ankans:
             if i[0].number in range(2,9):
                 score_fu += 16
             else:
@@ -883,7 +883,7 @@ class MahjongPlayer:
             役満の役の数
         """
         count = 0
-        for i in self.yakus()
+        for i in self.yakus():
             if i in ['suankou', 'daisangen', 'kokushimusou', 'ryuisou', 'tuisou', 'chinroutou', 'sukantu', \
                     'syoususi', 'daisusi', 'tyurenboutou', 'chihou', 'tenhou']:
                 count += 1
@@ -926,13 +926,13 @@ class MahjongPlayer:
         if not self.is_hora: raise RuntimeError('Not hora')
         SCORE_OYA = [[0,0,1500,2000,2400,2900,3400,3900,4400,4800,5300], \
                      [2100,2400,2900,3900,4800,5800,6800,7700,8700,9600,10600], \
-                     [3900,4800,5800,7700,9600,11600]+[12000]*5], \
-                     [7800,9600,11600]+[12000]*8], \
+                     [3900,4800,5800,7700,9600,11600]+[12000]*5, \
+                     [7800,9600,11600]+[12000]*8, \
                      [12000],[18000]*2,[24000]*3,[36000]*2,[48000]*10]
         SCORE_KO = [[0,0,1000,1300,1600,2000,2300,2600,2900,3200,3600], \
                     [1500,1600,2000,2600,3200,3900,4500,5200,5800,6400,7100], \
-                    [2700,3200,3900,5200,6400,7700]+[8000]*5], \
-                    [5200,6400,7700]+[8000]*8], \
+                    [2700,3200,3900,5200,6400,7700]+[8000]*5, \
+                    [5200,6400,7700]+[8000]*8, \
                     [8000],[12000]*2,[16000]*3,[24000]*2,[32000]*10]
         fu_index = [20,25] + [i*10 for i in range(3,12)].index(self.score_han)
         if self.oya:
