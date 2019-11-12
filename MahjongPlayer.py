@@ -225,7 +225,7 @@ class MahjongPlayer:
         is_furiten : bool
             プレイヤーがフリテン状態かどうか
         """
-        return(False)
+        is_furiten = False
 
     def is_kyusyukyuhai(self):
         """

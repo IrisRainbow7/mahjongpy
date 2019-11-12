@@ -11,7 +11,7 @@ class TestPlayer(unittest.TestCase):
     HANDS5 = MahjongTile.MahjongTile.make_hands_set('1155', '77', '3399', '22', '33') #七対子
     HANDS6 = MahjongTile.MahjongTile.make_hands_set('123', '77', '', '', '111222333') #大三元
     HANDS7 = MahjongTile.MahjongTile.make_hands_set('19', '19', '19', '1234', '1233') #国士無双
-    HANDS8 = MahjongTile.MahjongTile.make_hands_set('1155', '77', '3399', '22', '32') #七対子(一向聴)
+    HANDS8 = MahjongTile.MahjongTile.make_hands_set('1155', '77', '3399', '22', '32') #七対子(テンパイ)
     HANDS9 = MahjongTile.MahjongTile.make_hands_set('1199', '77', '3399', '22', '32') #九種九牌
     HANDS10 = MahjongTile.MahjongTile.make_hands_set('123456789', '', '', '222', '33') #一気通貫
     HANDS11 = MahjongTile.MahjongTile.make_hands_set('123', '123', '123', '222', '33') #三色同順
@@ -23,6 +23,7 @@ class TestPlayer(unittest.TestCase):
     HANDS17 = MahjongTile.MahjongTile.make_hands_set('11122245667899') #清一色
     HANDS18 = MahjongTile.MahjongTile.make_hands_set('111666', '444', '11', '444') #四暗刻
     HANDS19 = MahjongTile.MahjongTile.make_hands_set('11122345678999') #九蓮宝燈
+    HANDS20 = MahjongTile.MahjongTile.make_hands_set('1346', '36', '578', '14', '112') #何もなし
 
     def test_make_player(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
@@ -33,6 +34,7 @@ class TestPlayer(unittest.TestCase):
         self.assertFalse(p.is_riichi)
         self.assertFalse(p.is_tumo)
         self.assertFalse(p.is_ron)
+        self.assertRaises(ValueError, MahjongPlayer.MahjongPlayer())
 
     def test_shanten(self):
         h = MahjongTile.MahjongTile.make_hands_set('11345', '267', '123567')
@@ -65,14 +67,17 @@ class TestPlayer(unittest.TestCase):
 
 
 
-
-
     def test_riichi(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
         self.assertFalse(p.is_riichi)
+        p.riichi()
+        self.assertTrue(p.is_riichi)
+        self.assertTrue(p.is_doubleriichi)
 
     def test_tenpai(self):
-        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS8)
+        self.assertTrue(p.is_tenpai())
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS20)
         self.assertTrue(p.is_tenpai())
 
     def test_furiten(self):
@@ -80,7 +85,7 @@ class TestPlayer(unittest.TestCase):
         self.assertTrue(p.is_furiten())
 
     def test_kyusyukyuhai(self):
-        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS9)
         self.assertTrue(p.is_kyusyukyuhai())
 
     def test_hora(self):
@@ -193,36 +198,40 @@ class TestPlayer(unittest.TestCase):
 
 
     def test_displayed_doras(self):
-        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertEqual(p.displayed_doras(MahjongTile.MahjongTile('manzu', 2)), 2)
+        t = MahjongTable.MahjongTable()
+        t.dora_tiles = [MahjongTile.MahjongTile('manzu', 1)]
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1, table=t)
+        self.assertEqual(p.displayed_doras(), 2)
 
     def test_akadoras(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
+        p.hands[0].akadora = True
+        p.hands[1].akadora = True
         self.assertEqual(p.akadoras(), 2)
 
     def test_shuntus(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS3)
-        self.assertEqual(p.shuntus(), 4)
+        self.assertEqual(len(p.shuntus()), 4)
 
     def test_ankos(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS6)
-        self.assertEqual(p.ankos(), 3)
+        self.assertEqual(len(p.ankos()), 3)
 
     def test_minkos(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertEqual(p.minkos, 9)
+        self.assertEqual(len(p.minkos), 9)
 
     def test_ankans(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertEqual(p.ankans, 9)
+        self.assertEqual(len(p.ankans), 9)
 
     def test_minkans(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertEqual(p.minkans, 9)
+        self.assertEqual(len(p.minkans), 9)
 
     def test_kantus(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
-        self.assertEqual(p.kantus(), 9)
+        self.assertEqual(len(p.kantus()), 9)
 
 
     def test_yakus(self):
@@ -342,9 +351,6 @@ class TestPlayer(unittest.TestCase):
         self.assertIn('chinitu', p.yakus())
 
 
-
-
-
     def test_score_hu(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS3)
         self.assertEqual(p.yakus(), 20)
@@ -390,6 +396,22 @@ class TestPlayer(unittest.TestCase):
     def test_chitoitu(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
         self.assertTrue(p.is_chitoitu())
+
+    def test_chanta(self):
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
+        self.assertTrue(p.is_chanta())
+
+    def test_zyuntyan(self):
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
+        self.assertTrue(p.is_zyuntyan())
+
+    def test_ipeikou(self):
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
+        self.assertTrue(p.is_ipeikou())
+
+    def test_ryanpeikou(self):
+        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
+        self.assertTrue(p.is_ryanpeikou())
 
     def test_menzen(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS5)
