@@ -755,13 +755,13 @@ class MahjongPlayer:
             手牌の符数
         """
         yakus = self.yakus()
-        if is_tumo and 'pinfu' in yakus: return(20)
+        if self.is_tumo and 'pinfu' in yakus: return(20)
         if 'chitoitu' in yakus: return(25)
 
         score_fu = 20
 
-        if is_menzen and is_ron: score_fu += 10
-        elif is_tumo: score_fu += 2
+        if self.is_menzen and self.is_ron: score_fu += 10
+        elif self.is_tumo: score_fu += 2
 
         for i in self.minkos:
             if i[0].number in range(2,9):
@@ -786,9 +786,9 @@ class MahjongPlayer:
             else:
                 score_fu += 32
         table_wind = "" if self.table is None else self.table.wind
-        if self.zyantou[0].tile_type in ['haku', 'hatu', 'tyun', self.wind, table_wind]:
+        if self.zyantou()[0].tile_type in ['haku', 'hatu', 'tyun', self.wind, table_wind]:
             score_fu += 2
-        if (not is_wait_ryanmen()) and (not is_wait_syabo()):
+        if (not self.is_wait_ryanmen()) and (not self.is_wait_syabo()):
             score_fu += 2
 
         score_fu = ((score_fu // 10)+1)*10
@@ -803,12 +803,15 @@ class MahjongPlayer:
         score_fu : int
             手牌の翻数
         """
+        if self.is_yakuman(): return(13)
+        elif self.is_doubleyakuman(): return(23)
+        elif self.is_tripleyakuman(): return(30)
         yaku_hans =  {'riichi':1, 'ippatu':1, 'menzentumo':1, 'pinfu':1, 'tanyao':1, 'ipeikou':1, 'yakuhai':1, \
                     'rinsyankaihou':1, 'haitei':1, 'houtei':1, 'tyankan':1, 'doubleriichi':2, 'chanta':2, \
                     'ikkituukan':2, 'sansyokudouzyun':2, 'sansyokudoukou':2, 'sanankou':2, 'sankantu':2, \
                     'toitoi':2, 'chitoitu':2, 'zyuntyan':3, 'ryanpeikou':3, 'honitu':3, 'honroutou':4, \
                     'syousangen':4, 'chinitu':6}
-        yaku_hans_furoed = yaku_hans[:]
+        yaku_hans_furoed = dict(yaku_hans.items())
         yaku_hans_furoed['tyankan'] = 1
         yaku_hans_furoed['ikkituukan'] = 1
         yaku_hans_furoed['sansyokudouzyun'] = 1
@@ -817,7 +820,7 @@ class MahjongPlayer:
         yaku_hans_furoed['chinitu'] = 5
         score_han = 0
         yakus = self.yakus()
-        if is_menzen:
+        if self.is_menzen:
             for i in yakus:
                 score_han += yaku_hans[i]
         else:
@@ -928,18 +931,18 @@ class MahjongPlayer:
                      [2100,2400,2900,3900,4800,5800,6800,7700,8700,9600,10600], \
                      [3900,4800,5800,7700,9600,11600]+[12000]*5, \
                      [7800,9600,11600]+[12000]*8, \
-                     [12000],[18000]*2,[24000]*3,[36000]*2,[48000]*10]
+                     [12000]]+[[18000]]*2+[[24000]]*3+[[36000]]*2+[[48000]]*9+[[96000]]*9+[[144000]]*9
         SCORE_KO = [[0,0,1000,1300,1600,2000,2300,2600,2900,3200,3600], \
                     [1500,1600,2000,2600,3200,3900,4500,5200,5800,6400,7100], \
                     [2700,3200,3900,5200,6400,7700]+[8000]*5, \
                     [5200,6400,7700]+[8000]*8, \
-                    [8000],[12000]*2,[16000]*3,[24000]*2,[32000]*10]
-        fu_index = [20,25] + [i*10 for i in range(3,12)].index(self.score_han)
+                    [8000]]+[[12000]]*2+[[16000]]*3+[[24000]]*2+[[32000]]*9+[[64000]]*9+[[96000]]*9
+        fu_index = ([20,25] + [i*10 for i in range(3,12)]).index(self.score_fu())
+        if self.score_han() > 4:fu_index = 0
         if self.oya:
-            score_all = SCORE_OYA[self.score_han-1][fu_index]
+            return(SCORE_OYA[self.score_han()-1][fu_index])
         else:
-            score_all = SCORE_KO[self.score_han-1][fu_index]
-        return(score_all)
+            return(SCORE_KO[self.score_han()-1][fu_index])
 
     def score(self):
         """
@@ -948,7 +951,8 @@ class MahjongPlayer:
         score : int
             手牌の点数(積み棒分を含む)
         """
-        return(self.score_without_tsumibo() + self.honba*300)
+        honba = 0 if self.table is None else self.table.honba
+        return(self.score_without_tsumibo() + honba*300)
 
     def payed_score(self):
         """
@@ -959,20 +963,21 @@ class MahjongPlayer:
             [ロンした時に振り込んだ人に払ってもらう点数, 親に払ってもらう点数, 子に払ってもらう点数]
         """
         score = self.score_without_tsumibo()
+        honba = 0 if self.table is None else self.table.honba
         if not self.is_hora: raise RuntimeError('Not hora')
         if self.is_ron: return([self.score(), 0, 0])
         elif self.oya:
-            tmp = ((score/100)//3)*100
+            tmp = ((score//100)//3)*100
             if score % 3 != 0:
                 tmp += 100
             tmp += honba*100
             return([0, 0, tmp])
         else:
-            tmp_oya = ((score/100)//2)*100
+            tmp_oya = ((score//100)//2)*100
             if score % 2 != 0:
                 tmp_oya += 100
             tmp_oya += 100
-            tmp_ko = ((score/100)//4)*100
+            tmp_ko = ((score//100)//4)*100
             if score % 4 != 0:
                 tmp_ko += 100
             tmp_ko += 100
@@ -995,7 +1000,7 @@ class MahjongPlayer:
             両面待ちかどうか
         """
         tiles = []
-        if self.latest_tile.numer > 2:
+        if self.latest_tile.number > 2:
             tiles.append(MahjongTile.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number-2))
         elif self.latest_tile.number < 8:
             tiles.append(MahjongTile.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number+2))
@@ -1155,6 +1160,30 @@ class MahjongPlayer:
                 tmp2.append(self.hands.pop(self.hands.index(i)))
         self.melds.append(tmp2)
 
+    def ron(self, tile):
+        """
+        ロンする
 
+        Parameters
+        ----------
+        tile : MahjongTile
+            ロンする牌
 
-
+        Returns
+        -------
+        player : MahjongPlayer
+            振り込んだプレイヤー
+        """
+        p = None
+        players = [None] if self.table is None else self.table.players
+        for i in players:
+            if i.discards[-1] == tile:
+                p = i
+        self.hands.append(tile)
+        self.sort()
+        if not self.is_hora():
+            raise RuntimeError('Cannot hora')
+            self.hands.pop(self.hands.index(tile))
+        else:
+            self.is_ron = True
+        return(p)

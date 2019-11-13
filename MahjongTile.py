@@ -21,7 +21,7 @@ class MahjongTile:
 
     def __init__(self, tile_type, number=1, akadora=False):
         if not tile_type in self.TILE_TYPES+[None]: raise ValueError('unknown tile types')
-        if not number in [i for i in range(1,10)]: raise ValueError('unknown tile types')
+        if not number in [i for i in range(1,10)]+[None]: raise ValueError('unknown tile types')
         self.tile_type = tile_type
         self.number = number
         if tile_type in self.TILE_TYPES_ZIHAI: self.number = None
