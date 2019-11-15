@@ -59,9 +59,9 @@ class MahjongPlayer:
     def __init__(self, hands=[], discards=[], melds=[], oya=False, points=25000, wind='ton', latest_tile=KYOMU_TILE, \
                 table=None, turn=0, is_tumo=False, ankans=[], minkans=[], minkos=[]):
         if len(hands)+len(sum(melds,[])) not in [13, 14]: raise ValueError('amout of hands is not 13 or 14.')
-        self.hands = hands
-        self.discards = discards
-        self.melds = melds
+        self.hands = hands[:]
+        self.discards = discards[:]
+        self.melds = melds[:]
         self.oya = oya
         self.points = points
         self.wind = wind
@@ -71,9 +71,9 @@ class MahjongPlayer:
         self.riichi_turn = 100
         self.is_tumo = is_tumo
         self.is_ron = False
-        self.ankans = ankans
-        self.minkans = minkans
-        self.minkos = minkos
+        self.ankans = ankans[:]
+        self.minkans = minkans[:]
+        self.minkos = minkos[:]
         self.is_doubleriichi = False
         self.is_rinsyankaihou = False
         self.table = table
