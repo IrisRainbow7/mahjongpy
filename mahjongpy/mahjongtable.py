@@ -1,6 +1,4 @@
-import MahjongTile
-import MahjongPlayer
-
+import mahjongpy
 import random
 
 class MahjongTable:
@@ -46,7 +44,7 @@ class MahjongTable:
 
     def __init__(self, tiles=[], wind="ton", kyoku=1, honba=0, dora_showing_tiles=[], dora_tiles=[], \
                 players=[], use_akadora=True, kuitan=True, kandora_sokumekuri=False, rules={}):
-        self.tiles = MahjongTile.MahjongTile.make_tiles_set(use_akadora=rules.get('use_akadora', use_akadora))
+        self.tiles = mahjongpy.MahjongTile.make_tiles_set(use_akadora=rules.get('use_akadora', use_akadora))
         random.shuffle(self.tiles)
         self.wind = wind
         self.kyoku = kyoku
@@ -57,10 +55,10 @@ class MahjongTable:
         self.dora_tiles.append(self.dora_showing_tiles[0].next())
         self.ri_bou = self.honba
         h1, h2, h3, h4 = self.deal_tiles()
-        p1 = MahjongPlayer.MahjongPlayer(hands=h1, oya=True, wind='ton', table=self)
-        p2 = MahjongPlayer.MahjongPlayer(hands=h2, wind='nan', table=self)
-        p3 = MahjongPlayer.MahjongPlayer(hands=h3, wind='sha', table=self)
-        p4 = MahjongPlayer.MahjongPlayer(hands=h4, wind='pei', table=self)
+        p1 = mahjongpy.MahjongPlayer(hands=h1, oya=True, wind='ton', table=self)
+        p2 = mahjongpy.MahjongPlayer(hands=h2, wind='nan', table=self)
+        p3 = mahjongpy.MahjongPlayer(hands=h3, wind='sha', table=self)
+        p4 = mahjongpy.MahjongPlayer(hands=h4, wind='pei', table=self)
         self.players = [p1, p2, p3, p4]
         self.use_akadora = rules.get('use_akadora', use_akadora)
         self.kuitan = rules.get('kuitan', kuitan)

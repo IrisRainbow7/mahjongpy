@@ -1,5 +1,4 @@
-import MahjongTile
-import MahjongTable
+import mahjongpy
 
 class MahjongPlayer:
     """
@@ -55,7 +54,7 @@ class MahjongPlayer:
     """
 
     TILE_TYPES = ['pinzu', 'manzu', 'souzu', 'ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
-    KYOMU_TILE = MahjongTile.MahjongTile(None)
+    KYOMU_TILE = mahjongpy.MahjongTile(None)
 
     def __init__(self, hands=[], discards=[], melds=[], oya=False, points=25000, wind='ton', latest_tile=KYOMU_TILE, \
                 table=None, turn=0, is_tumo=False, ankans=[], minkans=[], minkos=[]):
@@ -143,20 +142,20 @@ class MahjongPlayer:
         count = 0
         for i in self.TILE_TYPES[:3]:
             for j in range(1,8):
-                if MahjongTile.MahjongTile(i,j) in tmp:
-                    if MahjongTile.MahjongTile(i,j+1) in tmp:
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j+1)))
+                if mahjongpy.MahjongTile(i,j) in tmp:
+                    if mahjongpy.MahjongTile(i,j+1) in tmp:
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j+1)))
                         count += 1
-                    if MahjongTile.MahjongTile(i,j+2) in tmp:
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j+2)))
+                    if mahjongpy.MahjongTile(i,j+2) in tmp:
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j+2)))
                         count += 1
         for i in self.TILE_TYPES:
             for j in range(1,8):
-                    if tmp.count(MahjongTile.MahjongTile(i,j))==2:
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                    if tmp.count(mahjongpy.MahjongTile(i,j))==2:
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
                         count += 1
                     if len(tmp)-count == 2:
                         tmp.pop(0)
@@ -172,20 +171,20 @@ class MahjongPlayer:
         count = 0
         for i in self.TILE_TYPES[:3]:
             for j in range(1,8):
-                if MahjongTile.MahjongTile(i,j) in tmp:
-                    if MahjongTile.MahjongTile(i,j+1) in tmp:
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j+1)))
+                if mahjongpy.MahjongTile(i,j) in tmp:
+                    if mahjongpy.MahjongTile(i,j+1) in tmp:
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j+1)))
                         count += 1
-                    if MahjongTile.MahjongTile(i,j+2) in tmp:
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j+2)))
+                    if mahjongpy.MahjongTile(i,j+2) in tmp:
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j+2)))
                         count += 1
         for i in self.TILE_TYPES:
             for j in range(1,8):
-                    if tmp.count(MahjongTile.MahjongTile(i,j))==2:
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
-                        tmp.pop(tmp.index(MahjongTile.MahjongTile(i,j)))
+                    if tmp.count(mahjongpy.MahjongTile(i,j))==2:
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
                         count += 1
                     if len(tmp)-count == 2:
                         tmp.pop(0)
@@ -196,24 +195,24 @@ class MahjongPlayer:
         count = 0
         for i in self.TILE_TYPES:
             for j in range(1,10):
-                if tmp.count(MahjongTile.MahjongTile(i,j))==2: count += 1
+                if tmp.count(mahjongpy.MahjongTile(i,j))==2: count += 1
         counts.append(7-count) #七対子用
 
         tiles = self.hands[:]
         tmp = []
-        tmp.append(tiles.count(MahjongTile.MahjongTile('pinzu',1)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('pinzu',9)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('manzu',1)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('manzu',9)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('souzu',1)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('souzu',9)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('ton')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('nan')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('sha')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('pei')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('haku')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('hatu')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('tyun')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('pinzu',1)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('pinzu',9)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('manzu',1)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('manzu',9)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('souzu',1)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('souzu',9)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('ton')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('nan')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('sha')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('pei')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('haku')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('hatu')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('tyun')))
         if tmp.count(1) == 13: counts.append(1)
         elif tmp.count(2) > 1: counts.append(13-tmp.count(1))
         else: counts.append(13-tmp.count(1)+1)
@@ -322,11 +321,11 @@ class MahjongPlayer:
         for _ in range(2):
             for i in range(1,8):
                 for j in self.TILE_TYPES[:3]:
-                    if MahjongTile.MahjongTile(j,i) in tiles and MahjongTile.MahjongTile(j,i+1) in tiles and MahjongTile.MahjongTile(j,i+2) in tiles:
+                    if mahjongpy.MahjongTile(j,i) in tiles and mahjongpy.MahjongTile(j,i+1) in tiles and mahjongpy.MahjongTile(j,i+2) in tiles:
                         tmp = []
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i))))
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i+1))))
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i+2))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i+1))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i+2))))
                         mentus.append(tmp)
 
     def make_kotus(self, tiles, mentus):
@@ -346,10 +345,10 @@ class MahjongPlayer:
         """
         for i in range(1,10):
             for j in self.TILE_TYPES:
-                if tiles.count(MahjongTile.MahjongTile(j,i)) == 3:
+                if tiles.count(mahjongpy.MahjongTile(j,i)) == 3:
                     tmp = []
                     for _ in range(3):
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i))))
                     mentus.append(tmp)
 
     def make_zyantou(self, tiles, mentus):
@@ -369,10 +368,10 @@ class MahjongPlayer:
         """
         for i in range(1,10):
             for j in self.TILE_TYPES:
-                if tiles.count(MahjongTile.MahjongTile(j,i)) == 2:
+                if tiles.count(mahjongpy.MahjongTile(j,i)) == 2:
                     tmp = []
                     for _ in range(2):
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i))))
                     mentus.append(tmp)
                     return(None)
 
@@ -409,10 +408,10 @@ class MahjongPlayer:
         tiles = self.hands[:]
         for i in range(1,10):
             for j in self.TILE_TYPES:
-                if tiles.count(MahjongTile.MahjongTile(j,i)) == 2:
+                if tiles.count(mahjongpy.MahjongTile(j,i)) == 2:
                     tmp = []
                     for _ in range(2):
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i))))
                     mentus.append(tmp)
         return(len(tiles) == 0)
 
@@ -426,19 +425,19 @@ class MahjongPlayer:
         if not self.is_menzen(): return(False)
         tmp = []
         tiles = self.hands[:]
-        tmp.append(tiles.count(MahjongTile.MahjongTile('pinzu',1)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('pinzu',9)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('manzu',1)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('manzu',9)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('souzu',1)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('souzu',9)))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('ton')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('nan')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('sha')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('pei')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('haku')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('hatu')))
-        tmp.append(tiles.count(MahjongTile.MahjongTile('tyun')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('pinzu',1)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('pinzu',9)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('manzu',1)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('manzu',9)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('souzu',1)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('souzu',9)))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('ton')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('nan')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('sha')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('pei')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('haku')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('hatu')))
+        tmp.append(tiles.count(mahjongpy.MahjongTile('tyun')))
         return(tmp.count(1) == 12 and tmp.count(2) == 1)
 
     def is_chanta(self):
@@ -531,11 +530,11 @@ class MahjongPlayer:
         for _ in range(2):
             for i in range(1,8):
                 for j in self.TILE_TYPES[:3]:
-                    if MahjongTile.MahjongTile(j,i) in tiles and MahjongTile.MahjongTile(j,i+1) in tiles and MahjongTile.MahjongTile(j,i+2) in tiles:
+                    if mahjongpy.MahjongTile(j,i) in tiles and mahjongpy.MahjongTile(j,i+1) in tiles and mahjongpy.MahjongTile(j,i+2) in tiles:
                         tmp = []
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i))))
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i+1))))
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i+2))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i+1))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i+2))))
                         mentus.append(tmp)
             count.append(len(tiles))
         return(count == [5,2])
@@ -552,11 +551,11 @@ class MahjongPlayer:
         for _ in range(2):
             for i in range(1,8):
                 for j in self.TILE_TYPES[:3]:
-                    if MahjongTile.MahjongTile(j,i) in tiles and MahjongTile.MahjongTile(j,i+1) in tiles and MahjongTile.MahjongTile(j,i+2) in tiles:
+                    if mahjongpy.MahjongTile(j,i) in tiles and mahjongpy.MahjongTile(j,i+1) in tiles and mahjongpy.MahjongTile(j,i+2) in tiles:
                         tmp = []
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i))))
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i+1))))
-                        tmp.append(tiles.pop(tiles.index(MahjongTile.MahjongTile(j,i+2))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i+1))))
+                        tmp.append(tiles.pop(tiles.index(mahjongpy.MahjongTile(j,i+2))))
                         mentus.append(tmp)
             count.append(len(tiles))
         return(count == [8,2])
@@ -678,24 +677,24 @@ class MahjongPlayer:
         table_wind = 'ton' if self.table is None else self.table.wind
         TILE_TYPES_YAKUHAI = self.TILE_TYPES[7:] + [self.wind] + [table_wind]
         for i in TILE_TYPES_YAKUHAI:
-            if tiles.count(MahjongTile.MahjongTile(i)) == 3:
+            if tiles.count(mahjongpy.MahjongTile(i)) == 3:
                 yakus.append('yakuhai')
         kuitan = 'True' if self.table is None else self.table.kuitan
         tmp = tiles[:] if kuitan else self.hands[:]
         count = 0
-        count += tmp.count(MahjongTile.MahjongTile('pinzu',1))
-        count += tmp.count(MahjongTile.MahjongTile('pinzu',9))
-        count += tmp.count(MahjongTile.MahjongTile('manzu',1))
-        count += tmp.count(MahjongTile.MahjongTile('manzu',9))
-        count += tmp.count(MahjongTile.MahjongTile('souzu',1))
-        count += tmp.count(MahjongTile.MahjongTile('souzu',9))
-        count += tmp.count(MahjongTile.MahjongTile('ton'))
-        count += tmp.count(MahjongTile.MahjongTile('nan'))
-        count += tmp.count(MahjongTile.MahjongTile('sha'))
-        count += tmp.count(MahjongTile.MahjongTile('pei'))
-        count += tmp.count(MahjongTile.MahjongTile('haku'))
-        count += tmp.count(MahjongTile.MahjongTile('hatu'))
-        count += tmp.count(MahjongTile.MahjongTile('tyun'))
+        count += tmp.count(mahjongpy.MahjongTile('pinzu',1))
+        count += tmp.count(mahjongpy.MahjongTile('pinzu',9))
+        count += tmp.count(mahjongpy.MahjongTile('manzu',1))
+        count += tmp.count(mahjongpy.MahjongTile('manzu',9))
+        count += tmp.count(mahjongpy.MahjongTile('souzu',1))
+        count += tmp.count(mahjongpy.MahjongTile('souzu',9))
+        count += tmp.count(mahjongpy.MahjongTile('ton'))
+        count += tmp.count(mahjongpy.MahjongTile('nan'))
+        count += tmp.count(mahjongpy.MahjongTile('sha'))
+        count += tmp.count(mahjongpy.MahjongTile('pei'))
+        count += tmp.count(mahjongpy.MahjongTile('haku'))
+        count += tmp.count(mahjongpy.MahjongTile('hatu'))
+        count += tmp.count(mahjongpy.MahjongTile('tyun'))
         if count == 0: yakus.append('tanyao')
         if self.is_menzen() and len(self.shuntus()) == 4 and self.zyantou()[0].tile_type not in TILE_TYPES_YAKUHAI and self.is_wait_ryanmen(): yakus.append('pinfu')
         if self.is_ipeikou(self.hands[:], []): yakus.append('ipeikou')
@@ -765,7 +764,7 @@ class MahjongPlayer:
             for i in self.TILE_TYPES[:3]:
                 count = []
                 for j in range(1,10):
-                    count.append(self.hands.count(MahjongTile.MahjongTile(i,j)))
+                    count.append(self.hands.count(mahjongpy.MahjongTile(i,j)))
                 if count.count(3)==2 and count.count(2)==1 and count.count(1)==6: yakus.append('tyurenboutou')
             is_furoed = False if self.table is None else self.table.is_furoed
             if not is_furoed and self.oya==False and self.turn == 0: yakus.append('chihou')
@@ -1100,9 +1099,9 @@ class MahjongPlayer:
         tiles = []
         if self.latest_tile.number is None: return(False)
         if self.latest_tile.number > 2:
-            tiles.append(MahjongTile.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number-2))
+            tiles.append(mahjongpy.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number-2))
         if self.latest_tile.number < 8:
-            tiles.append(MahjongTile.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number+2))
+            tiles.append(mahjongpy.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number+2))
         return(any([(i in self.hands) for i in tiles]))
 
     def is_wait_syabo(self):
@@ -1128,7 +1127,7 @@ class MahjongPlayer:
             raise RuntimeError('does NOT have such tile')
         else:
             self.turn += 1
-            self.discards.append(self.hands.pop(self.hands.index(MahjongTile.MahjongTile(tile.tile_type,tile.number))))
+            self.discards.append(self.hands.pop(self.hands.index(mahjongpy.MahjongTile(tile.tile_type,tile.number))))
 
     def riichi(self):
         """

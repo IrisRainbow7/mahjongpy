@@ -108,13 +108,13 @@ class MahjongTile:
 
         Examples
         --------
-        >>> hands_pinfu = MahjongTile.MahjongTile.make_hands_set('22345', '567', '123567') #平和
-        >>> hands_chitoitu = MahjongTile.MahjongTile.make_hands_set('1155', '77', '3399', '22', '33') #七対子
-        >>> hands_daisangen = MahjongTile.MahjongTile.make_hands_set('123', '77', '', '', '111222333') #大三元
-        >>> hands_kokushi = MahjongTile.MahjongTile.make_hands_set('19', '19', '19', '1234', '1233') #国士無双
-        >>> hands_lack_of_amout = MahjongTile.MahjongTile.make_hands_set('123', '456', '789') #枚数不足
+        >>> hands_pinfu = mahjongpy.MahjongTile.make_hands_set('22345', '567', '123567') #平和
+        >>> hands_chitoitu = mahjongpy.MahjongTile.make_hands_set('1155', '77', '3399', '22', '33') #七対子
+        >>> hands_daisangen = mahjongpy.MahjongTile.make_hands_set('123', '77', '', '', '111222333') #大三元
+        >>> hands_kokushi = mahjongpy.MahjongTile.make_hands_set('19', '19', '19', '1234', '1233') #国士無双
+        >>> hands_lack_of_amout = mahjongpy.MahjongTile.make_hands_set('123', '456', '789') #枚数不足
         ValueError
-        >>> hands_lack_of_amout = MahjongTile.MahjongTile.make_hands_set('123', '456', '789', checkamount=False)
+        >>> hands_lack_of_amout = mahjongpy.MahjongTile.make_hands_set('123', '456', '789', checkamount=False)
         """
         WIND_TILES = {'1':'ton', '2':'nan', '3':'sha', '4':'pei'}
         ZIHAI_TILES = {'1':'haku', '2':'hatu', '3':'tyun'}
