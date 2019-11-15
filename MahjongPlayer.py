@@ -50,6 +50,8 @@ class MahjongPlayer:
         プレイヤーの点数(積み棒分を除く)のキャッシュ
     yakus_cache : list
         プレイヤーの手牌でできる役のリストのキャッシュ
+    tilse_cache : list
+        手牌のキャッシュ
     """
 
     TILE_TYPES = ['pinzu', 'manzu', 'souzu', 'ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
@@ -79,6 +81,7 @@ class MahjongPlayer:
         self.score_cache = 0
         self.score_without_tsumibo_cache = 0
         self.yakus_cache = []
+        self.tiles_cache = []
         self.sort()
 
     def sort(self):
@@ -644,9 +647,14 @@ class MahjongPlayer:
         """
         return(self.ankans + self.minkans)
 
-    def yakus(self):
+    def yakus(self, cache=True):
         """
         プレイヤーの手牌でできる役のリストを返す
+
+        Parameters
+        ----------
+        cache : bool
+            キャッシュを使用するかどうか(Falseにするとキャッシュの有無を無視して再計算します)
 
         Returns
         -------
@@ -656,7 +664,11 @@ class MahjongPlayer:
         if not self.is_hora: raise RuntimeError('Not hora')
         yakus = []
 
-        if self.yakus_cache != []:
+        if self.tiles_cache != self.hands:
+            cache = False
+            self.tiles_cache = self.hands[:]
+
+        if self.yakus_cache != [] and cache:
             return(self.yakus_cache)
 
         if self.is_riichi: yakus.append('riichi')
@@ -685,7 +697,7 @@ class MahjongPlayer:
         count += tmp.count(MahjongTile.MahjongTile('hatu'))
         count += tmp.count(MahjongTile.MahjongTile('tyun'))
         if count == 0: yakus.append('tanyao')
-        if self.is_menzen() and len(self.shuntus()) == 4 and self.zyantou()[0].tile_type not in TILE_TYPES_YAKUHAI and self.is_wait_ryanmen: yakus.append('pinfu')
+        if self.is_menzen() and len(self.shuntus()) == 4 and self.zyantou()[0].tile_type not in TILE_TYPES_YAKUHAI and self.is_wait_ryanmen(): yakus.append('pinfu')
         if self.is_ipeikou(self.hands[:], []): yakus.append('ipeikou')
         table_tiles = [] if self.table is None else self.table.tiles
         if len(table_tiles) == 14 and self.is_tumo: yakus.append('haitei')
@@ -827,6 +839,7 @@ class MahjongPlayer:
             if debug: print('Not ryanmenmachi:2')
 
         if debug: print('sum:{}'.format(score_fu))
+        if score_fu % 10 == 0: score_fu -= 10
         score_fu = ((score_fu // 10)+1)*10
         score_fu = max(30, score_fu)
 
@@ -971,17 +984,13 @@ class MahjongPlayer:
         """
         return(self.yakuman_count()==3)
 
-    def score_without_tsumibo(self):
+    def score_ron(self):
         """
         Returns
         -------
         score : int
-            手牌の点数(場の積み棒分の点数を除く)
+            ロンのときの獲得点数
         """
-        if not self.is_hora: raise RuntimeError('Not hora')
-
-        if self.score_without_tsumibo_cache != 0: return(self.score_without_tsumibo_cache)
-
         SCORE_OYA = [[0,0,1500,2000,2400,2900,3400,3900,4400,4800,5300], \
                      [2100,2400,2900,3900,4800,5800,6800,7700,8700,9600,10600], \
                      [3900,4800,5800,7700,9600,11600]+[12000]*5, \
@@ -995,10 +1004,40 @@ class MahjongPlayer:
         fu_index = ([20,25] + [i*10 for i in range(3,12)]).index(self.score_fu())
         if self.score_han() > 4:fu_index = 0
         if self.oya:
-            self.score_without_tsumibo_cache = SCORE_OYA[self.score_han()-1][fu_index]
+            score = SCORE_OYA[self.score_han()-1][fu_index]
         else:
-            self.score_without_tsumibo_cache = SCORE_KO[self.score_han()-1][fu_index]
-        return(self.score_without_tsumibo_cache)
+            score = SCORE_KO[self.score_han()-1][fu_index]
+        return(score)
+
+    def score_without_tsumibo(self):
+        """
+        Returns
+        -------
+        score : int
+            手牌の点数(場の積み棒分の点数を除く)
+        """
+        if not self.is_hora: raise RuntimeError('Not hora')
+
+        if self.score_without_tsumibo_cache != 0: return(self.score_without_tsumibo_cache)
+
+        score = self.score_ron()
+        if self.is_tumo:
+            if self.oya:
+                tmp = ((score//100)//3)*100
+                if (score//100) % 3 != 0:
+                    tmp += 100
+                score = tmp * 3
+            else:
+                tmp_oya = ((score//100)//2)*100
+                if (score//100) % 2 != 0:
+                    tmp_oya += 100
+                tmp_ko = ((score//100)//4)*100
+                if (score//100) % 4 != 0:
+                    tmp_ko += 100
+                score = tmp_oya + tmp_ko*2
+
+        self.score_without_tsumibo_cache = score
+        return(score)
 
     def score(self):
         """
@@ -1021,25 +1060,25 @@ class MahjongPlayer:
             他家に払ってもらう手牌の点数のリスト。
             [ロンした時に振り込んだ人に払ってもらう点数, 親に払ってもらう点数, 子に払ってもらう点数]
         """
-        score = self.score_without_tsumibo()
+        score = self.score_ron()
         honba = 0 if self.table is None else self.table.honba
         if not self.is_hora: raise RuntimeError('Not hora')
-        if self.is_ron: return([self.score() if self.score_cache==0 else self.score_cache, 0, 0])
+        if self.is_ron: return([self.score(), 0, 0])
         elif self.oya:
             tmp = ((score//100)//3)*100
-            if score % 3 != 0:
+            if (score//100) % 3 != 0:
                 tmp += 100
             tmp += honba*100
             return([0, 0, tmp])
         else:
             tmp_oya = ((score//100)//2)*100
-            if score % 2 != 0:
+            if (score//100) % 2 != 0:
                 tmp_oya += 100
-            tmp_oya += 100
+            tmp_oya += honba*100
             tmp_ko = ((score//100)//4)*100
-            if score % 4 != 0:
+            if (score//100) % 4 != 0:
                 tmp_ko += 100
-            tmp_ko += 100
+            tmp_ko += honba*100
             return([0, tmp_oya, tmp_ko])
 
     def is_menzen(self):
@@ -1059,9 +1098,10 @@ class MahjongPlayer:
             両面待ちかどうか
         """
         tiles = []
+        if self.latest_tile.number is None: return(False)
         if self.latest_tile.number > 2:
             tiles.append(MahjongTile.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number-2))
-        elif self.latest_tile.number < 8:
+        if self.latest_tile.number < 8:
             tiles.append(MahjongTile.MahjongTile(self.latest_tile.tile_type, self.latest_tile.number+2))
         return(any([(i in self.hands) for i in tiles]))
 
@@ -1208,6 +1248,7 @@ class MahjongPlayer:
         for i in players:
             if i.discards[-1] == tile:
                 p = i
+        if p is None: raise RuntimeError('Nobody discards such tile')
         tiles = self.hands + [tile]
         shuntus = []
         self.make_shuntus(tiles, shuntus)

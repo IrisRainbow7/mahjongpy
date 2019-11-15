@@ -1,6 +1,7 @@
 import unittest
 import MahjongTile
 import MahjongPlayer
+import MahjongTable
 
 class TestPlayer(unittest.TestCase):
 
@@ -380,8 +381,188 @@ class TestPlayer(unittest.TestCase):
         self.assertTrue(p.is_kazoeyakuman())
 
     def test_score(self):
-        p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
+        t = MahjongTable.MahjongTable()
+        p, p2 = t.players[:2]
+        self.assertTrue(p.oya)
+        t.dora_tiles = [MahjongTile.MahjongTile('souzu',3)]
+        p.hands = MahjongTile.MahjongTile.make_hands_set('78','35','23499','','3333',checkamount=False)
+        p2.discards.append(MahjongTile.MahjongTile('manzu',9))
+        p.chi(MahjongTile.MahjongTile('manzu',9))
+        p.kan(MahjongTile.MahjongTile('tyun'))
+        t.dora_tiles[-1] = MahjongTile.MahjongTile('manzu',7)
+        p.hands.pop(p.hands.index(p.latest_tile))
+        p.hands.append(MahjongTile.MahjongTile('souzu',4))
+        p.latest_tile = MahjongTile.MahjongTile('souzu',4)
+        p.turn = 5
+        p.is_ron = True
+        self.assertEqual(t.dora_tiles, [MahjongTile.MahjongTile('souzu',3),MahjongTile.MahjongTile('manzu',7)])
+        self.assertTrue(p.is_hora())
+        self.assertEqual(p.yakus(), ['yakuhai'])
+        self.assertFalse(p.is_yakuman())
+        self.assertEqual(p.score_fu(), 60)
+        self.assertEqual(p.score_han(), 3)
+        self.assertEqual(p.score(), 11600)
+        self.assertEqual(p.payed_score(), [11600,0,0])
+
+    def test_score2(self):
+        t = MahjongTable.MahjongTable(honba=1)
+        self.assertEqual(t.info, '東1局1本場')
+        p, p2 = t.players[1:3]
+        self.assertFalse(p.oya)
+        self.assertEqual(p.wind, 'nan')
+        t.dora_tiles = [MahjongTile.MahjongTile('souzu',7)]
+        p.hands = MahjongTile.MahjongTile.make_hands_set('678','4','9999','','2233',checkamount=False)
+        p2.discards.append(MahjongTile.MahjongTile('tyun'))
+        p.pon(MahjongTile.MahjongTile('tyun'))
+        p2.discards.append(MahjongTile.MahjongTile('hatu'))
+        p.pon(MahjongTile.MahjongTile('hatu'))
+        p.kan(MahjongTile.MahjongTile('pinzu',9))
+        t.dora_tiles[-1] = MahjongTile.MahjongTile('manzu',6)
+        p.hands.pop(p.hands.index(p.latest_tile))
+        p.hands.append(MahjongTile.MahjongTile('souzu',4))
+        p.latest_tile = MahjongTile.MahjongTile('souzu',4)
+        p.turn = 5
+        p.is_ron = True
+        self.assertEqual(t.dora_tiles, [MahjongTile.MahjongTile('souzu',7),MahjongTile.MahjongTile('manzu',6)])
+        self.assertTrue(p.is_hora())
+        self.assertEqual(p.yakus(), ['yakuhai','yakuhai'])
+        self.assertEqual(p.score_fu(), 70)
+        self.assertEqual(p.score_han(), 3)
+        self.assertTrue(p.is_mangan())
+        self.assertEqual(p.score_without_tsumibo(), 8000)
+        self.assertEqual(p.score(), 8300)
+        self.assertEqual(p.payed_score(), [8300,0,0])
+
+    def test_score3(self):
+        t = MahjongTable.MahjongTable()
+        self.assertEqual(t.info, '東1局0本場')
+        p, p2 = t.players[1:3]
+        self.assertFalse(p.oya)
+        self.assertEqual(p.wind, 'nan')
+        t.dora_tiles = [MahjongTile.MahjongTile('souzu',3)]
+        p.hands = MahjongTile.MahjongTile.make_hands_set('333','1333','3333567',checkamount=False)
+        p.kan(MahjongTile.MahjongTile('pinzu',3))
+        t.dora_tiles[-1] = MahjongTile.MahjongTile('manzu',7)
+        p.hands.pop(p.hands.index(p.latest_tile))
+        p.hands.append(MahjongTile.MahjongTile('souzu',1))
+        p.latest_tile = MahjongTile.MahjongTile('souzu',1)
+        p.turn = 5
+        p.is_ron = True
+        self.assertEqual(t.dora_tiles, [MahjongTile.MahjongTile('souzu',3),MahjongTile.MahjongTile('manzu',7)])
+        self.assertTrue(p.is_hora())
+        self.assertEqual(p.yakus(), ['sansyokudoukou','sanankou'])
+        self.assertEqual(p.score_fu(), 60)
+        self.assertEqual(p.score_han(), 7)
+        self.assertTrue(p.is_haneman())
+        self.assertEqual(p.score(), 12000)
+        self.assertEqual(p.payed_score(), [12000,0,0])
+
+    def test_score4(self):
+        t = MahjongTable.MahjongTable(kyoku=2)
+        self.assertEqual(t.info, '東2局0本場')
+        p = t.players[3]
+        self.assertFalse(p.oya)
+        p2 = t.players[0]
+        self.assertEqual(p.wind, 'pei')
+        t.dora_tiles = [MahjongTile.MahjongTile('hatu')]
+        p.hands = MahjongTile.MahjongTile.make_hands_set('99','2367','234','','22',checkamount=False)
+        p2.discards.append(MahjongTile.MahjongTile('souzu',5))
+        p.chi(MahjongTile.MahjongTile('souzu',5))
+        p2.discards.append(MahjongTile.MahjongTile('souzu',1))
+        p.chi(MahjongTile.MahjongTile('souzu',1))
+        p.hands.append(MahjongTile.MahjongTile('hatu'))
+        p.latest_tile = MahjongTile.MahjongTile('hatu')
+        p.turn = 5
+        p.is_ron = True
+        self.assertEqual(t.dora_tiles, [MahjongTile.MahjongTile('hatu')])
+        self.assertTrue(p.is_hora())
+        self.assertEqual(p.yakus(), ['yakuhai'])
+        self.assertEqual(p.score_fu(), 30)
+        self.assertEqual(p.score_han(), 4)
+        self.assertEqual(p.score(), 7700)
+        self.assertEqual(p.payed_score(), [7700,0,0])
+
+    def test_score5(self):
+        t = MahjongTable.MahjongTable(wind='nan')
+        self.assertEqual(t.info, '南1局0本場')
+        p,p2 = t.players[2:]
+        self.assertFalse(p.oya)
+        self.assertEqual(p.wind, 'sha')
+        t.dora_tiles = [MahjongTile.MahjongTile('souzu',1)]
+        p.hands = MahjongTile.MahjongTile.make_hands_set('2356','44','88','22',checkamount=False)
+        p2.discards.append(MahjongTile.MahjongTile('manzu',1))
+        p.chi(MahjongTile.MahjongTile('manzu',1))
+        p2.discards.append(MahjongTile.MahjongTile('souzu',4))
+        p.pon(MahjongTile.MahjongTile('souzu',4))
+        p2.discards.append(MahjongTile.MahjongTile('nan'))
+        p.pon(MahjongTile.MahjongTile('nan'))
+        p.hands.append(MahjongTile.MahjongTile('manzu',4))
+        p.latest_tile = MahjongTile.MahjongTile('manzu',4)
+        p.turn = 5
+        p.is_tumo = True
+        self.assertEqual(t.dora_tiles, [MahjongTile.MahjongTile('souzu',1)])
+        self.assertTrue(p.is_hora())
+        self.assertEqual(p.yakus(), ['yakuhai'])
+        self.assertEqual(p.score_fu(), 30)
+        self.assertEqual(p.score_han(), 1)
+        self.assertTrue(p.is_wait_ryanmen())
+        self.assertEqual(p.score(), 1100)
+        self.assertEqual(p.payed_score(), [0,500,300])
+
+    def test_score6(self):
+        t = MahjongTable.MahjongTable(kyoku=3)
+        self.assertEqual(t.info, '東3局0本場')
+        p,p2 = t.players[2:]
+        self.assertFalse(p.oya)
+        self.assertEqual(p.wind, 'sha')
+        t.dora_tiles = [MahjongTile.MahjongTile('manzu',2)]
+        p.hands = MahjongTile.MahjongTile.make_hands_set('2267','','1133','11',checkamount=False)
+        p2.discards.append(MahjongTile.MahjongTile('pinzu',1))
+        p.pon(MahjongTile.MahjongTile('pinzu',1))
+        p2.discards.append(MahjongTile.MahjongTile('pinzu',3))
+        p.pon(MahjongTile.MahjongTile('pinzu',3))
+        p2.discards.append(MahjongTile.MahjongTile('ton'))
+        p.pon(MahjongTile.MahjongTile('ton'))
+        p.hands.append(MahjongTile.MahjongTile('manzu',5))
+        p.latest_tile = MahjongTile.MahjongTile('manzu',5)
+        p.turn = 5
+        p.is_ron = True
+        self.assertEqual(t.dora_tiles, [MahjongTile.MahjongTile('manzu',2)])
+        self.assertTrue(p.is_hora())
+        self.assertEqual(p.yakus(), ['yakuhai'])
+        self.assertEqual(p.score_fu(), 30)
+        self.assertEqual(p.score_han(), 3)
+        self.assertTrue(p.is_wait_ryanmen())
+        self.assertEqual(p.score(), 3900)
+        self.assertEqual(p.payed_score(), [3900,0,0])
+
+    def test_score7(self):
+        t = MahjongTable.MahjongTable(wind='nan',kyoku=4)
+        self.assertEqual(t.info, '南4局0本場')
+        p = t.players[-1]
+        self.assertFalse(p.oya)
+        p2 = t.players[0]
+        t.dora_tiles = [MahjongTile.MahjongTile('pinzu',3)]
+        p.hands = MahjongTile.MahjongTile.make_hands_set('222','45','779999','','11',checkamount=False)
+        p2.discards.append(MahjongTile.MahjongTile('souzu',3))
+        p.chi(MahjongTile.MahjongTile('souzu',3))
+        p.kan(MahjongTile.MahjongTile('pinzu',9))
+        t.dora_tiles[-1] = MahjongTile.MahjongTile('souzu',1)
+        p.hands.pop(p.hands.index(p.latest_tile))
+        p.hands.append(MahjongTile.MahjongTile('haku'))
+        p.latest_tile = MahjongTile.MahjongTile('haku')
+        p.turn = 5
+        p.is_ron = True
+        self.assertEqual(t.dora_tiles, [MahjongTile.MahjongTile('pinzu',3),MahjongTile.MahjongTile('souzu',1)])
+        self.assertTrue(p.is_hora())
+        self.assertEqual(p.yakus(), ['yakuhai'])
+        self.assertEqual(p.score_fu(), 60)
+        self.assertEqual(p.score_han(), 1)
         self.assertEqual(p.score(), 2000)
+        self.assertEqual(p.payed_score(), [2000,0,0])
+
+
+
 
     def test_payed_score(self):
         p = MahjongPlayer.MahjongPlayer(hands=self.HANDS1)
