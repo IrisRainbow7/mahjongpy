@@ -1172,11 +1172,25 @@ class MahjongPlayer:
         can_pon : bool
             チーできるかどうか
         """
+        if tile.tile_type in self.TILE_TYPES[3:]: return(False)
         count = []
-        count.append(self.hands.count(MahjongTile.MahjongTile(tile.tile_type,tile.number-2)))
-        count.append(self.hands.count(MahjongTile.MahjongTile(tile.tile_type,tile.number-1)))
-        count.append(self.hands.count(MahjongTile.MahjongTile(tile.tile_type,tile.number+1)))
-        count.append(self.hands.count(MahjongTile.MahjongTile(tile.tile_type,tile.number+2)))
+        if tile.number>2:
+            count.append(self.hands.count(mahjongpy.MahjongTile(tile.tile_type,tile.number-2)))
+        else:
+            count.append(0)
+        if tile.number>1:
+            count.append(self.hands.count(mahjongpy.MahjongTile(tile.tile_type,tile.number-1)))
+        else:
+            count.append(0)
+        if tile.number<9:
+            count.append(self.hands.count(mahjongpy.MahjongTile(tile.tile_type,tile.number+1)))
+        else:
+            count.append(0)
+        if tile.number<8:
+            count.append(self.hands.count(mahjongpy.MahjongTile(tile.tile_type,tile.number+2)))
+        else:
+            count.append(0)
+
         judge = False
         for i in range(3):
             if count[i:i+2].count(1) == 2:
@@ -1193,7 +1207,7 @@ class MahjongPlayer:
         cpunt = []
         for i in self.TILE_TYPES:
             for j in range(1,10):
-                count.append(self.hands.count(MahjongTile.MahjongTile(i,j)))
+                count.append(self.hands.count(mahjongpy.MahjongTile(i,j)))
         return(count.count(4) > 0)
 
     def can_minkan(self, tiles):
@@ -1370,7 +1384,7 @@ class MahjongPlayer:
             self.is_ron = True
         return(p)
 
-    def next_player(self)
+    def next_player(self):
         """
         Returns
         -------
