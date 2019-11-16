@@ -1371,14 +1371,14 @@ class MahjongPlayer:
         return(p)
 
     def next_player(self)
-    """
-    Returns
-    -------
-    player : MahjongPlayer
-        自身の次のプレイヤー
-    """
-    players = [None]*4 if self.table is None else self.table.players
-    p1, p2, p3, p4 = players
-    next_player = {p1:p2, p2:p3, p3:p4, p4:p1}
-    return(next_player[self])
+        """
+        Returns
+        -------
+        player : MahjongPlayer
+            自身の次のプレイヤー
+        """
+        players = [None]*4 if self.table is None else self.table.players
+        p1, p2, p3, p4 = players
+        next_player = {p1:p2, p2:p3, p3:p4, p4:p1}
+        return(next_player[self])
 
