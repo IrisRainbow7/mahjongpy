@@ -1146,6 +1146,84 @@ class MahjongPlayer:
         self.riichi_turn = self.turn
         self.is_riichi = True
 
+    def can_pon(self, tile):
+        """
+        Parameters
+        ----------
+        tile : MahjongTile
+            他家が捨てた牌
+
+        Returns
+        -------
+        can_pon : bool
+            ポンできるかどうか
+        """
+        return(self.hands.count(tile) > 1)
+
+    def can_chi(self, tile):
+        """
+        Parameters
+        ----------
+        tile : MahjongTile
+            上家が捨てた牌
+
+        Returns
+        -------
+        can_pon : bool
+            チーできるかどうか
+        """
+        count = []
+        count.append(self.hands.count(MahjongTile.MahjongTile(tile.tile_type,tile.number-2)))
+        count.append(self.hands.count(MahjongTile.MahjongTile(tile.tile_type,tile.number-1)))
+        count.append(self.hands.count(MahjongTile.MahjongTile(tile.tile_type,tile.number+1)))
+        count.append(self.hands.count(MahjongTile.MahjongTile(tile.tile_type,tile.number+2)))
+        judge = False
+        for i in range(3):
+            if count[i:i+2].count(1) == 2:
+                judge = True
+        return(judge)
+
+    def can_ankan(self):
+        """
+        Returns
+        -------
+        can_ankan : bool
+            暗槓できるかどうか
+        """
+        cpunt = []
+        for i in self.TILE_TYPES:
+            for j in range(1,10):
+                count.append(self.hands.count(MahjongTile.MahjongTile(i,j)))
+        return(count.count(4) > 0)
+
+    def can_minkan(self, tiles):
+        """
+        Parameters
+        ----------
+        tile : MahjongTile
+            他家が捨てた牌
+
+        Returns
+        -------
+        can_minkan : bool
+            明槓できるかどうか
+        """
+        return(self.hands.count(tile)==3)
+
+    def can_kakan(self):
+        """
+        Returns
+        -------
+        can_kakan : bool
+            加槓できるかどうか
+        """
+        judge = False
+        for i in self.hands:
+            for j in self.minkos:
+                if j[0] == i:
+                    judge = True
+        return(judge)
+
     def kan(self, tile):
         """
         カンする(暗槓または大明槓)
