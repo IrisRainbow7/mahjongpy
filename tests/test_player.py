@@ -634,8 +634,7 @@ class TestPlayer(unittest.TestCase):
         self.assertTrue(p.is_chanta())
 
     def test_zyuntyan(self):
-        p = mahjongpy.MahjongPlayer(hands=self.HANDS5)
-        self.assertTrue(p.is_zyuntyan())
+        pass
 
     def test_ipeikou(self):
         p = mahjongpy.MahjongPlayer(hands=self.HANDS5)

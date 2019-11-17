@@ -626,9 +626,10 @@ class MahjongPlayer:
         tiles = self.hands[:]
         mentus = []
         self.make_kotus(tiles, mentus)
-        for i in mentus:
-            if self.latest_tile in i:
-                mentus.remove(i)
+        if self.is_tumo or self.is_ron:
+            for i in mentus:
+                if self.latest_tile in i:
+                    mentus.remove(i)
         return(mentus)
 
     def kotus(self):
