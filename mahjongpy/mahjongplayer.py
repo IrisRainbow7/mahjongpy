@@ -626,6 +626,9 @@ class MahjongPlayer:
         tiles = self.hands[:]
         mentus = []
         self.make_kotus(tiles, mentus)
+        for i in mentus:
+            if self.latest_tile in i:
+                mentus.remove(i)
         return(mentus)
 
     def kotus(self):
@@ -726,9 +729,10 @@ class MahjongPlayer:
                 count.append(len([k for k in tiles if k.tile_type==j and k.number==i]))
             if count.count(3) == 3: yakus.append('sansyokudoukou')
         if judge: yakus.append('sansyokudoukou')
-        if len(self.minkos) < 2  and len(self.kotus())+len(self.kantus()) == 3: yakus.append('sanankou')
-        if len(self.minkos) == 1  and len(self.kotus())+len(self.kantus()) == 4: yakus.append('sanankou')
-        if len(self.kotus()) == 4:
+        if len(self.ankos()) == 3 or len(self.ankos())+len(self.ankans)==3: yakus.append('sanankou')
+        #if len(self.minkos) < 2  and len(self.kotus())+len(self.kantus()) == 3: yakus.append('sanankou')
+        #if len(self.minkos) == 1  and len(self.kotus())+len(self.kantus()) == 4: yakus.append('sanankou')
+        if len(self.kotus()) == 4 or len(self.kotus())+len(self.kantus()) == 4:
             if self.is_menzen():
                 if self.is_tumo or self.hands.count(self.latest_tile) == 2:
                     yakus.append('suankou')
@@ -806,9 +810,9 @@ class MahjongPlayer:
             else:
                 score_fu += 4
                 if debug: print('Yaotyuhai Minko:4')
-        ankos = []
-        self.make_kotus(self.hands[:], ankos)
-        for i in ankos:
+        #ankos = []
+        #self.make_kotus(self.hands[:], ankos)
+        for i in self.ankos():
             if i[0].number in range(2,9):
                 score_fu += 4
                 if debug: print('Tyuntyanpai Anko:4')
@@ -1327,8 +1331,9 @@ class MahjongPlayer:
         p = None
         players = [None] if self.table is None else self.table.players
         for i in players:
-            if i.discards[-1] == tile:
-                p = i
+            if len(i.discards) != 0:
+                if i.discards[-1] == tile:
+                    p = i
         count = self.hands.count(tile)
         if p is None: raise RuntimeError('Nobody discards such tile')
         if count != 2: raise RuntimeError('You DON\'T have toitu of such tile')
@@ -1351,8 +1356,9 @@ class MahjongPlayer:
         p = None
         players = [None] if self.table is None else self.table.players
         for i in players:
-            if i.discards[-1] == tile:
-                p = i
+            if len(i.discards) != 0:
+                if i.discards[-1] == tile:
+                    p = i
         if p is None: raise RuntimeError('Nobody discards such tile')
         tiles = self.hands + [tile]
         shuntus = []

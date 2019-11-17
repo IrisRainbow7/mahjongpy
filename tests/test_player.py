@@ -559,6 +559,59 @@ class TestPlayer(unittest.TestCase):
         self.assertEqual(p.score(), 2000)
         self.assertEqual(p.payed_score(), [2000,0,0])
 
+    def test_score8(self):
+        t = mahjongpy.MahjongTable(wind='nan',kyoku=3)
+        self.assertEqual(t.info, '南3局0本場')
+        p = t.players[-1]
+        self.assertFalse(p.oya)
+        self.assertEqual(p.wind, 'pei')
+        p2 = t.players[0]
+        t.dora_tiles = [mahjongpy.MahjongTile('souzu',7)]
+        p.hands = mahjongpy.MahjongTile.make_hands_set('3457777','77889','','','22',checkamount=False)
+        p.kan(mahjongpy.MahjongTile('manzu',7))
+        t.dora_tiles[-1] = mahjongpy.MahjongTile('pinzu',3)
+        p.hands.pop(p.hands.index(p.latest_tile))
+        p.hands.append(mahjongpy.MahjongTile('souzu',9))
+        p.latest_tile = mahjongpy.MahjongTile('souzu',9)
+        p.turn = 5
+        p.is_ron = True
+        self.assertEqual(t.dora_tiles, [mahjongpy.MahjongTile('souzu',7),mahjongpy.MahjongTile('pinzu',3)])
+        self.assertTrue(p.is_hora())
+        self.assertEqual(p.yakus(), ['ipeikou'])
+        self.assertEqual(p.score_fu(), 50)
+        self.assertEqual(p.score_han(), 3)
+        self.assertEqual(p.score(), 6400)
+        self.assertEqual(p.payed_score(), [6400,0,0])
+
+    def test_score9(self):
+        t = mahjongpy.MahjongTable(wind='nan',kyoku=3)
+        self.assertEqual(t.info, '南3局0本場')
+        p,p2 = t.players[:2]
+        self.assertTrue(p.oya)
+        self.assertEqual(p.wind, 'ton')
+        t.dora_tiles = [mahjongpy.MahjongTile('manzu',4),mahjongpy.MahjongTile('manzu',8),mahjongpy.MahjongTile('manzu',7)]
+        p.hands = mahjongpy.MahjongTile.make_hands_set('222','4455','','','1111333',checkamount=False)
+        p.kan(mahjongpy.MahjongTile('haku'))
+        t.dora_tiles[-1] = mahjongpy.MahjongTile('souzu',7)
+        p.hands.pop(p.hands.index(p.latest_tile))
+        p.hands.append(mahjongpy.MahjongTile('souzu',4))
+        p.latest_tile = mahjongpy.MahjongTile('souzu',4)
+        p.turn = 5
+        p.is_tumo = True
+        self.assertTrue(p.is_hora())
+        self.assertTrue(p.is_menzen())
+        self.assertEqual(len(p.ankos())+len(p.kantus()), 3)
+        self.assertEqual(len(p.ankos()), 2)
+        self.assertEqual(len(p.minkos), 2)
+        self.assertEqual(len(p.kotus()), 3)
+        self.assertEqual(p.yakus(), ['menzentumo','yakuhai','yakuhai','suankou'])
+        self.assertTrue(p.is_yakuman())
+        self.assertEqual(p.score_fu(), 70)
+        self.assertEqual(p.score_han(), 13)
+        self.assertEqual(p.score(), 48000)
+        self.assertEqual(p.payed_score(), [0,0,16000])
+
+
 
 
 
