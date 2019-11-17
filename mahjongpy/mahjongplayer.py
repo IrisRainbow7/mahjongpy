@@ -1238,6 +1238,20 @@ class MahjongPlayer:
                     judge = True
         return(judge)
 
+    def can_tumo(self, tile):
+        """
+        Parameters
+        ----------
+        tile : MahjongTile
+            他家が捨てた牌
+
+        Returns
+        -------
+        can_tumo : bool
+            ツモできるかどうか
+        """
+        return(mahjongpy.MahjongPlayer(hands=self.hands[:]+[tile]).is_hora)
+
     def kan(self, tile):
         """
         カンする(暗槓または大明槓)
