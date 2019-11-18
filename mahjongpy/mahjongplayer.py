@@ -1342,7 +1342,8 @@ class MahjongPlayer:
         for _ in range(2):
             tmp.append(self.hands.pop(self.hands.index(tile)))
         tmp.append(p.discards.pop(p.discards.index(tile)))
-        tmp[-1].from_tacha = True
+        index = 0 if self.table is None else {0:2,1:1,2:0}[self.table.players[1:].index(p)]
+        tmp[index].from_tacha = True
         self.melds.append(tmp)
         self.minkos.append(tmp)
 
