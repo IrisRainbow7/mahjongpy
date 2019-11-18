@@ -1243,7 +1243,7 @@ class MahjongPlayer:
                     judge = True
         return(judge)
 
-    def can_tumo(self, tile):
+    def can_ron(self, tile):
         """
         Parameters
         ----------
@@ -1403,7 +1403,24 @@ class MahjongPlayer:
             self.hands.pop(self.hands.index(tile))
         else:
             self.is_ron = True
+            if self.riichi and self.table is not None:
+                for i in range(len(self.table.dora_tiles)):
+                    self.table.add_kandora()
         return(p)
+
+    def tumo(self):
+        """
+        ツモする
+        """
+        if not self.is_hora():
+            raise RuntimeError('Cannot hora')
+        else:
+            self.is_tumo = True
+            if self.riichi and self.table is not None:
+                for i in range(len(self.table.dora_tiles)):
+                    self.table.add_kandora()
+
+
 
     def next_player(self):
         """
