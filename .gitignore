@@ -1,1 +1,4 @@
 __pycache__/
+build/
+dist/
+mahjongpy.egg-info/
