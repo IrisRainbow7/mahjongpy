@@ -1342,6 +1342,7 @@ class MahjongPlayer:
         for _ in range(2):
             tmp.append(self.hands.pop(self.hands.index(tile)))
         tmp.append(p.discards.pop(p.discards.index(tile)))
+        tmp[-1].from_tacha = True
         self.melds.append(tmp)
         self.minkos.append(tmp)
 
