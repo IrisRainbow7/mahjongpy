@@ -18,6 +18,8 @@ class MahjongTable:
         現在の局が何本場か
     dora_showing_tiles : list
         ドラ表示牌(MahjongTile)のリスト
+    uradora_showing_tiles : list
+        裏ドラ表示牌(MahjongTile)のリスト
     dora_tiles : list
         ドラ牌(MahjongTile)のリスト
     ri_bou : int
@@ -49,8 +51,9 @@ class MahjongTable:
         self.wind = wind
         self.kyoku = kyoku
         self.honba = honba
-        self.dora_showing_tiles = dora_showing_tiles
-        self.dora_tiles = dora_tiles
+        self.dora_showing_tiles = dora_showing_tiles[:]
+        self.uradora_showing_tiles = [][:]
+        self.dora_tiles = dora_tiles[:]
         self.dora_showing_tiles.append(self.tiles.pop(random.randrange(136)))
         self.dora_tiles.append(self.dora_showing_tiles[0].next())
         self.ri_bou = self.honba
@@ -102,12 +105,16 @@ class MahjongTable:
         player.latest_tile = draw_tile
         player.sort()
 
-    def add_kandora(self):
+    def add_kandora(self, ura=False):
         """
         カンドラをめくる
         """
-        self.dora_showing_tiles.append(self.tiles.pop(random.randrange(5)))
-        self.dora_tiles.append(self.dora_showing_tiles[-1].next())
+        tile = self.tiles.pop(random.randrange(5))
+        if ura:
+            self.uradora_showing_tiles.append(tile)
+        else:
+            self.dora_showing_tiles.append(tile)
+        self.dora_tiles.append(tile.next())
 
     def tiles_left(self):
         """

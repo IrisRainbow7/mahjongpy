@@ -1409,7 +1409,7 @@ class MahjongPlayer:
             self.is_ron = True
             if self.riichi and self.table is not None:
                 for i in range(len(self.table.dora_tiles)):
-                    self.table.add_kandora()
+                    self.table.add_kandora(ura=True)
         return(p)
 
     def tumo(self):
@@ -1424,7 +1424,7 @@ class MahjongPlayer:
             self.is_tumo = True
             if self.riichi and self.table is not None:
                 for i in range(len(self.table.dora_tiles)):
-                    self.table.add_kandora()
+                    self.table.add_kandora(ura=True)
 
 
 
