@@ -163,4 +163,4 @@ class MahjongTile:
                     return(self.number < other.number)
 
     def __eq__(self, other):
-        return(self.tile_type == other.tile_type and self.number == other.number)
+        return(self.tile_type == other.tile_type and self.number == other.number and self.akadora == other.akadora)
