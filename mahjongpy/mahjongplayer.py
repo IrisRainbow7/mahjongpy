@@ -748,7 +748,7 @@ class MahjongPlayer:
             if len([j for j in tiles if j.tile_type in [i]+self.TILE_TYPES[3:]]) == 14: count += 1
         if count > 0: yakus.append('honitu')
         if self.zyantou()[0].number==None and len([i for i in tiles if i.number==None]) > 5: yakus.append('syousangen')
-        if len([i for i in tiles if i.number in [1,9,None]]) == 14: yakus.append('honroutou')
+        if len([i for i in tiles if i.number in [1,9,None]]) == 14 and (not self.is_kokushimusou()): yakus.append('honroutou')
         for i in self.TILE_TYPES[:3]:
             if len([j for j in tiles if j.tile_type in [i]]) == 14:yakus.append('chinitu')
         count = 0
