@@ -227,7 +227,7 @@ class MahjongPlayer:
         is_tenpai : bool
             プレイヤーがテンパイかどうか
         """
-        return(self.shanten == 0)
+        return(self.shanten() == 0)
 
     def is_furiten(self):
         """
@@ -1215,7 +1215,7 @@ class MahjongPlayer:
                 count.append(self.hands.count(mahjongpy.MahjongTile(i,j)))
         return(count.count(4) > 0)
 
-    def can_minkan(self, tiles):
+    def can_minkan(self, tile):
         """
         Parameters
         ----------
@@ -1255,7 +1255,7 @@ class MahjongPlayer:
         can_tumo : bool
             ツモできるかどうか
         """
-        return(mahjongpy.MahjongPlayer(hands=self.hands[:]+[tile]).is_hora)
+        return(mahjongpy.MahjongPlayer(hands=self.hands[:]+[tile]).is_hora())
 
     def kan(self, tile):
         """
@@ -1396,13 +1396,15 @@ class MahjongPlayer:
         p = None
         players = [None] if self.table is None else self.table.players
         for i in players:
-            if i.discards[-1] == tile:
+            if len(i.discards) != 0 and i.discards[-1] == tile:
                 p = i
         self.hands.append(tile)
         self.sort()
         if not self.is_hora():
             raise RuntimeError('Cannot hora')
             self.hands.pop(self.hands.index(tile))
+        elif len(self.yakus()) == 0:
+            raise RuntimeError('NO YAKUS!!')
         else:
             self.is_ron = True
             if self.riichi and self.table is not None:
@@ -1416,6 +1418,8 @@ class MahjongPlayer:
         """
         if not self.is_hora():
             raise RuntimeError('Cannot hora')
+        elif len(self.yakus()) == 0:
+            raise RuntimeError('NO YAKUS!!')
         else:
             self.is_tumo = True
             if self.riichi and self.table is not None:
