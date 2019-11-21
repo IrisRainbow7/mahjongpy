@@ -14,6 +14,7 @@ class TestTable(unittest.TestCase):
         self.assertTrue(t.use_akadora)
         self.assertTrue(t.kuitan)
         self.assertFalse(t.kandora_sokumekuri)
+        self.assertEqual(t.tiles_left(), 68)
 
     def test_change_rules(self):
         t = mahjongpy.MahjongTable(use_akadora=False, kuitan=False, kandora_sokumekuri=True)
@@ -31,3 +32,5 @@ class TestTable(unittest.TestCase):
         self.assertEqual(len(t.players[1].hands), 13)
         self.assertEqual(len(t.players[2].hands), 13)
         self.assertEqual(len(t.players[3].hands), 13)
+
+

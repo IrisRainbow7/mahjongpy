@@ -109,4 +109,11 @@ class MahjongTable:
         self.dora_showing_tiles.append(self.tiles.pop(random.randrange(5)))
         self.dora_tiles.append(self.dora_showing_tiles[-1].next())
 
-
+    def tiles_left(self):
+        """
+        Returns
+        -------
+        count : int
+            残りの牌の枚数
+        """
+        return(len(self.tiles)-14)
