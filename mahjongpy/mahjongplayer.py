@@ -1132,7 +1132,7 @@ class MahjongPlayer:
             raise RuntimeError('does NOT have such tile')
         else:
             self.turn += 1
-            self.discards.append(self.hands.pop(self.hands.index(mahjongpy.MahjongTile(tile.tile_type,tile.number))))
+            self.discards.append(self.hands.pop(self.hands.index(mahjongpy.MahjongTile(tile.tile_type,tile.number,akadora=tile.akadora))))
 
     def riichi(self):
         """
@@ -1210,7 +1210,7 @@ class MahjongPlayer:
         can_ankan : bool
             暗槓できるかどうか
         """
-        cpunt = []
+        count = []
         for i in self.TILE_TYPES:
             for j in range(1,10):
                 count.append(self.hands.count(mahjongpy.MahjongTile(i,j)))
@@ -1256,7 +1256,7 @@ class MahjongPlayer:
         can_tumo : bool
             ツモできるかどうか
         """
-        return(mahjongpy.MahjongPlayer(hands=self.hands[:]+[tile]).is_hora())
+        return(mahjongpy.MahjongPlayer(hands=self.hands[:]+[tile],melds=self.melds[:]).is_hora())
 
     def kan(self, tile):
         """
@@ -1272,7 +1272,7 @@ class MahjongPlayer:
         count = self.hands.count(tile)
         if count != 4:
             for i in players:
-                if i.discards[-1] == tile:
+                if len(i.discards) != 0 and i.discards[-1] == tile:
                     p = i
         if p is None and count != 4: raise RuntimeError('Nobody discards such tile')
         if count < 3: raise RuntimeError('Lack of amount of tiles for kan')
@@ -1283,12 +1283,15 @@ class MahjongPlayer:
             self.ankans.append(tmp)
             self.melds.append(tmp[:3])
             self.table.draw(self)
-            if self.is_hora:self.is_rinsyankaihou = True
+            if self.is_hora: self.is_rinsyankaihou = True
             self.table.add_kandora()
             #self.discard(SOME_TILE)
         else:
             for _ in range(3): #大明槓
                 tmp.append(self.hands.pop(self.hands.index(tile)))
+            tmp.append(p.discards.pop(p.discards.index(tile)))
+            index = 0 if self.table is None else {0:3,1:1,2:0}[self.table.players[1:].index(p)]
+            tmp[index].from_tacha = True
             self.minkans.append(tmp)
             self.melds.append(tmp[:3])
             self.table.draw(self)
