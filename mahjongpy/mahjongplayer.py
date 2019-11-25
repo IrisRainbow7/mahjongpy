@@ -1150,6 +1150,7 @@ class MahjongPlayer:
         if self.turn == 0 and is_furoed: self.doubleriichi = True
         self.riichi_turn = self.turn
         self.is_riichi = True
+        if self.table is not None: self.table.ri_bou += 1
 
     def can_pon(self, tile):
         """

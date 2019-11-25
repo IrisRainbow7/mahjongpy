@@ -26,6 +26,12 @@ class MahjongTable:
         リー棒の数
     players : list
         MahjongPlayer4人のリスト
+    oya_player : int
+        1～４。何人目のプレイヤーが親か
+    p1_wind : int
+        プレイヤー1の自風。1:東　2:南　3:西　4:北
+    players_points : list of int
+        プレイヤーの得点
     use_akadora : bool
         赤ドラを使用するかどうか(デフォルト:True)
     kuitan : bool
@@ -40,12 +46,15 @@ class MahjongTable:
         round_name_jpに加え何本場かを示す文字列。"東2局1本場"
     is_furoed : bool
         誰か1人でもすでに鳴いたかどうか
+    win_player : MahjongPlayer
+        この卓の勝者
     """
 
     WIND_NAME_JP = {'ton':'東', 'nan':'南', 'sha':'西', 'pei':'北'}
 
     def __init__(self, tiles=[], wind="ton", kyoku=1, honba=0, dora_showing_tiles=[], dora_tiles=[], \
-                players=[], use_akadora=True, kuitan=True, kandora_sokumekuri=False, rules={}):
+                ri_bou=0, players=[], oya_player=1, p1_wind=0, players_points=[25000]*4, use_akadora=True, kuitan=True, \
+                kandora_sokumekuri=False, rules={}):
         self.tiles = mahjongpy.MahjongTile.make_tiles_set(use_akadora=rules.get('use_akadora', use_akadora))
         random.shuffle(self.tiles)
         self.wind = wind
@@ -56,12 +65,16 @@ class MahjongTable:
         self.dora_tiles = dora_tiles[:]
         self.dora_showing_tiles.append(self.tiles.pop(random.randrange(136)))
         self.dora_tiles.append(self.dora_showing_tiles[0].next())
-        self.ri_bou = self.honba
+        self.ri_bou = ri_bou
         h1, h2, h3, h4 = self.deal_tiles()
-        p1 = mahjongpy.MahjongPlayer(hands=h1, oya=True, wind='ton', table=self)
-        p2 = mahjongpy.MahjongPlayer(hands=h2, wind='nan', table=self)
-        p3 = mahjongpy.MahjongPlayer(hands=h3, wind='sha', table=self)
-        p4 = mahjongpy.MahjongPlayer(hands=h4, wind='pei', table=self)
+        p_is_oya = []
+        for i in range(1,5):
+            p_is_oya.append(i==oya_player)
+        wind_rot = ['ton','nan','sha','pei','ton','nan','sha','pei']
+        p1 = mahjongpy.MahjongPlayer(hands=h1, oya=p_is_oya[0], wind=wind_rot[p1_wind], points=players_points[0], table=self)
+        p2 = mahjongpy.MahjongPlayer(hands=h2, oya=p_is_oya[1], wind=wind_rot[p1_wind+1], points=players_points[1], table=self)
+        p3 = mahjongpy.MahjongPlayer(hands=h3, oya=p_is_oya[2], wind=wind_rot[p1_wind+2], points=players_points[2], table=self)
+        p4 = mahjongpy.MahjongPlayer(hands=h4, oya=p_is_oya[3], wind=wind_rot[p1_wind+3], points=players_points[3], table=self)
         self.players = [p1, p2, p3, p4]
         self.use_akadora = rules.get('use_akadora', use_akadora)
         self.kuitan = rules.get('kuitan', kuitan)
@@ -69,6 +82,8 @@ class MahjongTable:
         self.round_name_jp = self.WIND_NAME_JP[self.wind] + str(kyoku) + '局'
         self.info = self.round_name_jp + str(self.honba) + '本場'
         self.is_furoed = False
+        self.win_player = None
+        self.is_ryukyoku = False
 
     def deal_tiles(self,oya=1):
         """
@@ -124,3 +139,31 @@ class MahjongTable:
             残りの牌の枚数
         """
         return(len(self.tiles)-14)
+
+    def next_round(self):
+        """
+        次の局に進みます
+
+        Notes
+        -----
+        self.tablesおよびself.playersが更新されるので再取得してください
+        """
+        NEXT_WIND = {'ton':'nan', 'nan':'sha', 'sha':'pei', 'pei':'ton'}
+        if self.win_player is None: raise RuntimeError('self.win_player is not setted')
+        if self.is_ryukyoku:
+            self.win_player = MahjongPlayer(oya=False)
+        if self.win_player.oya:
+            self.honba += 1
+        else:
+            self.kyoku += 1
+            if self.kyoku == 5:
+                self.wind = NEXT_WIND[self.wind]
+                self.kyoku = 1
+            self.oya_player += 1
+            if self.oya_player == 5: self.oya_player = 1
+        self.p1_wind += 1
+        if self.p1_wind == 5: self.p1_wind = 1
+        players_points = []
+        for i in self.players:
+            players_points.append(i.points)
+        return(MahjongTable(kyoku=self.kyoku, wind=self.wind, honba=self.honba, oya_player=self.oya_player, p1_wind=self.p1_wind, ri_bou=self.ri_bou, use_akadora=self.use_akadora, kuitan=self.kuitan, kandora_sokumekuri=self.kandora_sokumekuri, players_points=players_points))
