@@ -1144,8 +1144,10 @@ class MahjongPlayer:
             門前でないと鳴けない
             テンパイでないと鳴けない
         """
-        if not self.is_menzen():raise RuntimeError('Can Riichi ONLY when menzen')
-        if not self.is_tenpai():raise RuntimeError('Can Riichi ONLY when tenpai')
+        if not self.is_menzen(): raise RuntimeError('Can Riichi ONLY when menzen')
+        if not self.is_tenpai(): raise RuntimeError('Can Riichi ONLY when tenpai')
+        if self.points < 1000: raise RuntimeError('Cannot Richii by lack of points')
+        if self.table is not None and len(self.table.tiles) < 4: raise RuntimeError('Cannot Riichi by lack of table tiles')
         is_furoed = False if self.table is None else self.table.is_furoed
         if self.turn == 0 and is_furoed: self.doubleriichi = True
         self.riichi_turn = self.turn
