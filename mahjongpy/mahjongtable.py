@@ -183,7 +183,7 @@ class MahjongTable:
         """
         NEXT_WIND = {'ton':'nan', 'nan':'sha', 'sha':'pei', 'pei':'ton'}
         if self.is_ryukyoku:
-            self.win_player = MahjongPlayer(hands=[None]*13,oya=False)
+            self.win_player = mahjongpy.MahjongPlayer(hands=[42]*13,oya=False)
         if self.win_player is None: raise RuntimeError('self.win_player is not setted')
         if self.win_player.oya:
             self.honba += 1
@@ -200,3 +200,10 @@ class MahjongTable:
         for i in self.players:
             players_points.append(i.points)
         return(MahjongTable(kyoku=self.kyoku, wind=self.wind, honba=self.honba, oya_player=self.oya_player, p1_wind=self.p1_wind, ri_bou=self.ri_bou, use_akadora=self.use_akadora, kuitan=self.kuitan, kandora_sokumekuri=self.kandora_sokumekuri, players_points=players_points))
+
+    def ryukyoku(self):
+        """
+        流局する
+        """
+        self.is_ryukyoku = True
+        self.calculate_score()

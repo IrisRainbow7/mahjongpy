@@ -10,6 +10,8 @@ class MahjongTile:
         牌の数字。字牌の場合はNone
     akadora : bool
         赤ドラかどうか
+    from_tacha : bool
+        他家からの牌かどうか(鳴いた時に他家からの牌を横向きに表示する時の判定に使用)
     """
 
     TILE_TYPES = ['manzu', 'pinzu', 'souzu', 'ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
