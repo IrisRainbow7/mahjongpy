@@ -729,7 +729,6 @@ class MahjongPlayer:
             for j in self.TILE_TYPES[:3]:
                 count.append(len([k for k in tiles if k.tile_type==j and k.number==i]))
             if count.count(3) == 3: yakus.append('sansyokudoukou')
-        if judge: yakus.append('sansyokudoukou')
         if len(self.ankos()) == 3 or len(self.ankos())+len(self.ankans)==3: yakus.append('sanankou')
         #if len(self.minkos) < 2  and len(self.kotus())+len(self.kantus()) == 3: yakus.append('sanankou')
         #if len(self.minkos) == 1  and len(self.kotus())+len(self.kantus()) == 4: yakus.append('sanankou')
