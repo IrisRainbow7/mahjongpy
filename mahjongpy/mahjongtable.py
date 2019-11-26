@@ -66,15 +66,17 @@ class MahjongTable:
         self.dora_showing_tiles.append(self.tiles.pop(random.randrange(136)))
         self.dora_tiles.append(self.dora_showing_tiles[0].next())
         self.ri_bou = ri_bou
+        self.oya_player = oya_player
+        self.p1_wind = p1_wind
         h1, h2, h3, h4 = self.deal_tiles()
         p_is_oya = []
         for i in range(1,5):
-            p_is_oya.append(i==oya_player)
+            p_is_oya.append(i==self.oya_player)
         wind_rot = ['ton','nan','sha','pei','ton','nan','sha','pei']
-        p1 = mahjongpy.MahjongPlayer(hands=h1, oya=p_is_oya[0], wind=wind_rot[p1_wind], points=players_points[0], table=self)
-        p2 = mahjongpy.MahjongPlayer(hands=h2, oya=p_is_oya[1], wind=wind_rot[p1_wind+1], points=players_points[1], table=self)
-        p3 = mahjongpy.MahjongPlayer(hands=h3, oya=p_is_oya[2], wind=wind_rot[p1_wind+2], points=players_points[2], table=self)
-        p4 = mahjongpy.MahjongPlayer(hands=h4, oya=p_is_oya[3], wind=wind_rot[p1_wind+3], points=players_points[3], table=self)
+        p1 = mahjongpy.MahjongPlayer(hands=h1, oya=p_is_oya[0], wind=wind_rot[self.p1_wind], points=players_points[0], table=self)
+        p2 = mahjongpy.MahjongPlayer(hands=h2, oya=p_is_oya[1], wind=wind_rot[self.p1_wind+1], points=players_points[1], table=self)
+        p3 = mahjongpy.MahjongPlayer(hands=h3, oya=p_is_oya[2], wind=wind_rot[self.p1_wind+2], points=players_points[2], table=self)
+        p4 = mahjongpy.MahjongPlayer(hands=h4, oya=p_is_oya[3], wind=wind_rot[self.p1_wind+3], points=players_points[3], table=self)
         self.players = [p1, p2, p3, p4]
         self.use_akadora = rules.get('use_akadora', use_akadora)
         self.kuitan = rules.get('kuitan', kuitan)
@@ -149,9 +151,9 @@ class MahjongTable:
         self.tablesおよびself.playersが更新されるので再取得してください
         """
         NEXT_WIND = {'ton':'nan', 'nan':'sha', 'sha':'pei', 'pei':'ton'}
-        if self.win_player is None: raise RuntimeError('self.win_player is not setted')
         if self.is_ryukyoku:
-            self.win_player = MahjongPlayer(oya=False)
+            self.win_player = MahjongPlayer(hands=[None]*13,oya=False)
+        if self.win_player is None: raise RuntimeError('self.win_player is not setted')
         if self.win_player.oya:
             self.honba += 1
         else:
