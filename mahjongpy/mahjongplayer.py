@@ -1393,11 +1393,6 @@ class MahjongPlayer:
         ----------
         tile : MahjongTile
             ロンする牌
-
-        Returns
-        -------
-        player : MahjongPlayer
-            振り込んだプレイヤー
         """
         p = None
         players = [None] if self.table is None else self.table.players
@@ -1416,7 +1411,10 @@ class MahjongPlayer:
             if self.riichi and self.table is not None:
                 for i in range(len(self.table.dora_tiles)):
                     self.table.add_kandora(ura=True)
-        return(p)
+        if self.table is not None:
+            self.table.furikomi_player = p
+            self.table.win_player = self
+            self.table.calculate_score()
 
     def tumo(self):
         """
@@ -1428,10 +1426,12 @@ class MahjongPlayer:
             raise RuntimeError('NO YAKUS!!')
         else:
             self.is_tumo = True
+            if self.table is not None:
+                self.table.win_player = self
+                self.table.calculate_score()
             if self.riichi and self.table is not None:
                 for i in range(len(self.table.dora_tiles)):
                     self.table.add_kandora(ura=True)
-
 
 
     def next_player(self):

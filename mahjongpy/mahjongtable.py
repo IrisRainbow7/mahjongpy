@@ -48,6 +48,8 @@ class MahjongTable:
         誰か1人でもすでに鳴いたかどうか
     win_player : MahjongPlayer
         この卓の勝者
+    furikomi_player : MahjongPlayer
+        ロンで和了った時に振り込んだプレイヤー
     """
 
     WIND_NAME_JP = {'ton':'東', 'nan':'南', 'sha':'西', 'pei':'北'}
@@ -85,6 +87,7 @@ class MahjongTable:
         self.info = self.round_name_jp + str(self.honba) + '本場'
         self.is_furoed = False
         self.win_player = None
+        self.furikomi_player = None
         self.is_ryukyoku = False
 
     def deal_tiles(self,oya=1):
@@ -141,6 +144,34 @@ class MahjongTable:
             残りの牌の枚数
         """
         return(len(self.tiles)-14)
+
+    def calculate_score(self):
+        """
+        点数を分配します
+        """
+        if self.win_player is None and not self.is_ryukyoku: raise RuntimeError('Round NOT finished')
+        if self.is_ryukyoku:
+            tenpai_count = len([i for i in self.players if i.is_tenpai()])
+            if tenpai_count in [0,4]: return()
+            t_score = int(3000 / tenpai_count)
+            nt_score = int(3000 / (4-tenpai_count))
+            for i in self.players:
+                if i.is_tenpai():
+                    i.points += t_score
+                else:
+                    i.points -= nt_score
+        else:
+            score = self.win_player.payed_score()
+            if self.win_player.is_tumo:
+                self.win_player.points += self.win_player.score()
+                for i in self.players:
+                    if i==self.win_player: continue
+                    elif i.oya: i.points -= score[1]
+                    else: i.points -= score[2]
+            elif self.win_player.is_ron:
+                self.win_player.points += self.win_player.score()
+                self.furikomi_player.points -= score[0]
+
 
     def next_round(self):
         """
