@@ -1,6 +1,7 @@
 import mahjongpy
 import random
 
+
 class MahjongTable:
     """
     麻雀卓を表すクラス
@@ -52,9 +53,9 @@ class MahjongTable:
 
     WIND_NAME_JP = {'ton':'東', 'nan':'南', 'sha':'西', 'pei':'北'}
 
-    def __init__(self, tiles=[], wind="ton", kyoku=1, honba=0, dora_showing_tiles=[], dora_tiles=[], \
-                ri_bou=0, players=[], oya_player=1, players_points=[25000]*4, use_akadora=True, kuitan=True, \
-                kandora_sokumekuri=False, rules={}):
+    def __init__(self, tiles=[], wind="ton", kyoku=1, honba=0, dora_showing_tiles=[], dora_tiles=[],
+                 ri_bou=0, players=[], oya_player=1, players_points=[25000]*4, use_akadora=True, kuitan=True,
+                 kandora_sokumekuri=False, rules={}):
         self.tiles = mahjongpy.MahjongTile.make_tiles_set(use_akadora=rules.get('use_akadora', use_akadora))
         random.shuffle(self.tiles)
         self.wind = wind
@@ -72,7 +73,7 @@ class MahjongTable:
         p_is_oya = []
         p_wind = []
         for i in range(1,5):
-            p_is_oya.append(i==self.oya_player)
+            p_is_oya.append(i == self.oya_player)
             p_wind.append(wind_rot[3-self.oya_player+i])
         p1 = mahjongpy.MahjongPlayer(hands=h1, oya=p_is_oya[0], wind=p_wind[0], points=players_points[0], table=self)
         p2 = mahjongpy.MahjongPlayer(hands=h2, oya=p_is_oya[1], wind=p_wind[1], points=players_points[1], table=self)
@@ -164,13 +165,12 @@ class MahjongTable:
             if self.win_player.is_tumo:
                 self.win_player.points += self.win_player.score()
                 for i in self.players:
-                    if i==self.win_player: continue
+                    if i == self.win_player: continue
                     elif i.oya: i.points -= score[1]
                     else: i.points -= score[2]
             elif self.win_player.is_ron:
                 self.win_player.points += self.win_player.score()
                 self.furikomi_player.points -= score[0]
-
 
     def next_round(self):
         """
@@ -193,8 +193,6 @@ class MahjongTable:
                 self.kyoku = 1
             self.oya_player += 1
             if self.oya_player == 5: self.oya_player = 1
-        self.p1_wind += 1
-        if self.p1_wind == 5: self.p1_wind = 1
         players_points = []
         for i in self.players:
             players_points.append(i.points)

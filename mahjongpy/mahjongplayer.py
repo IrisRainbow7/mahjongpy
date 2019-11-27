@@ -1,5 +1,6 @@
 import mahjongpy
 
+
 class MahjongPlayer:
     """
     プレイヤーを表すクラス。各プレイヤーの情報などを保持する
@@ -56,8 +57,8 @@ class MahjongPlayer:
     TILE_TYPES = ['pinzu', 'manzu', 'souzu', 'ton', 'nan', 'sha', 'pei', 'haku', 'hatu', 'tyun']
     KYOMU_TILE = mahjongpy.MahjongTile(None)
 
-    def __init__(self, hands=[], discards=[], melds=[], oya=False, points=25000, wind='ton', latest_tile=KYOMU_TILE, \
-                table=None, turn=0, is_tumo=False, ankans=[], minkans=[], minkos=[]):
+    def __init__(self, hands=[], discards=[], melds=[], oya=False, points=25000, wind='ton', latest_tile=KYOMU_TILE,
+                 table=None, turn=0, is_tumo=False, ankans=[], minkans=[], minkos=[]):
         if len(hands)+len(sum(melds,[])) not in [13, 14]: raise ValueError('amout of hands is not 13 or 14.')
         self.hands = hands[:]
         self.discards = discards[:]
@@ -153,13 +154,13 @@ class MahjongPlayer:
                         count += 1
         for i in self.TILE_TYPES:
             for j in range(1,8):
-                    if tmp.count(mahjongpy.MahjongTile(i,j))==2:
-                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
-                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
-                        count += 1
-                    if len(tmp)-count == 2:
-                        tmp.pop(0)
-                        count += 1
+                if tmp.count(mahjongpy.MahjongTile(i,j)) == 2:
+                    tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                    tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                    count += 1
+                if len(tmp)-count == 2:
+                    tmp.pop(0)
+                    count += 1
         if len(tmp) == count: counts.append(count)
 
         tiles = self.hands[:]
@@ -182,21 +183,21 @@ class MahjongPlayer:
                         count += 1
         for i in self.TILE_TYPES:
             for j in range(1,8):
-                    if tmp.count(mahjongpy.MahjongTile(i,j))==2:
-                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
-                        tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
-                        count += 1
-                    if len(tmp)-count == 2:
-                        tmp.pop(0)
-                        count += 1
+                if tmp.count(mahjongpy.MahjongTile(i,j)) == 2:
+                    tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                    tmp.pop(tmp.index(mahjongpy.MahjongTile(i,j)))
+                    count += 1
+                if len(tmp)-count == 2:
+                    tmp.pop(0)
+                    count += 1
         if len(tmp) == count: counts.append(count)
 
         tmp = tiles[:]
         count = 0
         for i in self.TILE_TYPES:
             for j in range(1,10):
-                if tmp.count(mahjongpy.MahjongTile(i,j))==2: count += 1
-        counts.append(7-count) #七対子用
+                if tmp.count(mahjongpy.MahjongTile(i,j)) == 2: count += 1
+        counts.append(7-count)  # 七対子用
 
         tiles = self.hands[:]
         tmp = []
@@ -219,7 +220,6 @@ class MahjongPlayer:
 
         return(min(counts)-1)
 
-
     def is_tenpai(self):
         """
         Returns
@@ -237,6 +237,7 @@ class MahjongPlayer:
             プレイヤーがフリテン状態かどうか
         """
         is_furiten = False
+        return(is_furiten)
 
     def is_kyusyukyuhai(self):
         """
@@ -460,7 +461,7 @@ class MahjongPlayer:
                 if j.number in [1, 9, None]:
                     count += 1
                     break
-        if is_hora and count==5: return(True)
+        if is_hora and count == 5: return(True)
 
         count = 0
         tiles = self.hands[:]
@@ -474,7 +475,7 @@ class MahjongPlayer:
                 if j.number in [1, 9, None]:
                     count += 1
                     break
-        if is_hora and count==5: return(True)
+        if is_hora and count == 5: return(True)
 
         return(False)
 
@@ -498,7 +499,7 @@ class MahjongPlayer:
                 if j.number in [1, 9]:
                     count += 1
                     break
-        if is_hora and count==5: return(True)
+        if is_hora and count == 5: return(True)
 
         count = 0
         tiles = self.hands[:]
@@ -512,11 +513,9 @@ class MahjongPlayer:
                 if j.number in [1, 9]:
                     count += 1
                     break
-        if is_hora and count==5: return(True)
+        if is_hora and count == 5: return(True)
 
         return(False)
-
-
 
     def is_ipeikou(self, tiles, mentus):
         """
@@ -560,7 +559,6 @@ class MahjongPlayer:
             count.append(len(tiles))
         return(count == [8,2])
 
-
     def displayed_doras(self):
         """
         手牌の内ドラ表示牌の次の牌の数
@@ -583,6 +581,7 @@ class MahjongPlayer:
         手牌の赤ドラの数
 
         Returns
+        -------
         count : int
             手牌の赤ドラの数
         """
@@ -595,6 +594,7 @@ class MahjongPlayer:
     def doras(self):
         """
         Returns
+        -------
         count : int
             手牌の内、ドラ表示牌の次の牌の数と、赤ドラの数の和
         """
@@ -714,22 +714,22 @@ class MahjongPlayer:
         for i in self.TILE_TYPES[:3]:
             count = []
             for j in range(1,10):
-                count.append(len([k for k in tiles if k.tile_type==i and k.number==j]))
-            if all([l>0 for l in count]): judge = True
+                count.append(len([k for k in tiles if k.tile_type == i and k.number == j]))
+            if all([l > 0 for l in count]): judge = True
         if judge: yakus.append('ikkituukan')
         for i in range(1,8):
             count = []
             for j in self.TILE_TYPES[:3]:
-                count.append(len([k for k in tiles if k.tile_type==j and k.number==i]))
-                count.append(len([k for k in tiles if k.tile_type==j and k.number==i+1]))
-                count.append(len([k for k in tiles if k.tile_type==j and k.number==i+1]))
+                count.append(len([k for k in tiles if k.tile_type == j and k.number == i]))
+                count.append(len([k for k in tiles if k.tile_type == j and k.number == i+1]))
+                count.append(len([k for k in tiles if k.tile_type == j and k.number == i+1]))
             if count.count(1) == 9: yakus.append('sansyokudouzyun')
         for i in range(1,10):
             count = []
             for j in self.TILE_TYPES[:3]:
-                count.append(len([k for k in tiles if k.tile_type==j and k.number==i]))
+                count.append(len([k for k in tiles if k.tile_type == j and k.number == i]))
             if count.count(3) == 3: yakus.append('sansyokudoukou')
-        if len(self.ankos()) == 3 or len(self.ankos())+len(self.ankans)==3: yakus.append('sanankou')
+        if len(self.ankos()) == 3 or len(self.ankos())+len(self.ankans) == 3: yakus.append('sanankou')
         #if len(self.minkos) < 2  and len(self.kotus())+len(self.kantus()) == 3: yakus.append('sanankou')
         #if len(self.minkos) == 1  and len(self.kotus())+len(self.kantus()) == 4: yakus.append('sanankou')
         if len(self.kotus()) == 4 or len(self.kotus())+len(self.kantus()) == 4:
@@ -746,19 +746,19 @@ class MahjongPlayer:
         for i in self.TILE_TYPES[:3]:
             if len([j for j in tiles if j.tile_type in [i]+self.TILE_TYPES[3:]]) == 14: count += 1
         if count > 0: yakus.append('honitu')
-        if self.zyantou()[0].number==None and len([i for i in tiles if i.number==None]) > 5: yakus.append('syousangen')
+        if self.zyantou()[0].number is None and len([i for i in tiles if i.number is None]) > 5: yakus.append('syousangen')
         if len([i for i in tiles if i.number in [1,9,None]]) == 14 and (not self.is_kokushimusou()): yakus.append('honroutou')
         for i in self.TILE_TYPES[:3]:
             if len([j for j in tiles if j.tile_type in [i]]) == 14:yakus.append('chinitu')
         count = 0
         for i in self.TILE_TYPES[7:]:
-            if len([j for j in tiles if j.tile_type==i]) > 2: count += 1
+            if len([j for j in tiles if j.tile_type == i]) > 2: count += 1
         if count == 3: yakus.append('daisangen')
         if self.is_kokushimusou(): yakus.append('kokushimusou')
         if self.zyantou()[0].tile_type in self.TILE_TYPES[3:7] and len([i for i in tiles if i.tile_type in self.TILE_TYPES[3:7]]) > 8: yakus.append('syoususi')
         count = 0
         for i in self.TILE_TYPES[3:7]:
-            if len([j for j in tiles if j.tile_type==i]) > 2: count += 1
+            if len([j for j in tiles if j.tile_type == i]) > 2: count += 1
         if count == 4: yakus.append('daisusi')
         if len([i for i in tiles if i.tile_type in ['souzu', 'hatu']]) == 14: yakus.append('ryuisou')
         if len([i for i in tiles if i.tile_type in self.TILE_TYPES[3:]]) == 14: yakus.append('tuisou')
@@ -769,10 +769,10 @@ class MahjongPlayer:
                 count = []
                 for j in range(1,10):
                     count.append(self.hands.count(mahjongpy.MahjongTile(i,j)))
-                if count.count(3)==2 and count.count(2)==1 and count.count(1)==6: yakus.append('tyurenboutou')
+                if count.count(3) == 2 and count.count(2) == 1 and count.count(1) == 6: yakus.append('tyurenboutou')
             is_furoed = False if self.table is None else self.table.is_furoed
-            if not is_furoed and self.oya==False and self.turn == 0: yakus.append('chihou')
-            if self.oya==True and self.turn==0: yakus.append('tenhou')
+            if not is_furoed and (not self.oya) and self.turn == 0: yakus.append('chihou')
+            if self.oya and self.turn == 0: yakus.append('tenhou')
 
         self.yakus_cache = yakus
         return(yakus)
@@ -869,11 +869,11 @@ class MahjongPlayer:
         elif self.is_tripleyakuman():
             if debug: print('TripleYakuman')
             return(30)
-        yaku_hans =  {'riichi':1, 'ippatu':1, 'menzentumo':1, 'pinfu':1, 'tanyao':1, 'ipeikou':1, 'yakuhai':1, \
-                    'rinsyankaihou':1, 'haitei':1, 'houtei':1, 'tyankan':1, 'doubleriichi':2, 'chanta':2, \
-                    'ikkituukan':2, 'sansyokudouzyun':2, 'sansyokudoukou':2, 'sanankou':2, 'sankantu':2, \
-                    'toitoi':2, 'chitoitu':2, 'zyuntyan':3, 'ryanpeikou':3, 'honitu':3, 'honroutou':4, \
-                    'syousangen':4, 'chinitu':6}
+        yaku_hans = {'riichi':1, 'ippatu':1, 'menzentumo':1, 'pinfu':1, 'tanyao':1, 'ipeikou':1, 'yakuhai':1,
+                     'rinsyankaihou':1, 'haitei':1, 'houtei':1, 'tyankan':1, 'doubleriichi':2, 'chanta':2,
+                     'ikkituukan':2, 'sansyokudouzyun':2, 'sansyokudoukou':2, 'sanankou':2, 'sankantu':2,
+                     'toitoi':2, 'chitoitu':2, 'zyuntyan':3, 'ryanpeikou':3, 'honitu':3, 'honroutou':4,
+                     'syousangen':4, 'chinitu':6}
         yaku_hans_furoed = dict(yaku_hans.items())
         yaku_hans_furoed['tyankan'] = 1
         yaku_hans_furoed['ikkituukan'] = 1
@@ -908,7 +908,7 @@ class MahjongPlayer:
         """
         fu = self.score_fu()
         han = self.score_han()
-        return((han==3 and fu>69) or (han==4 and fu>39) or (han==5))
+        return((han == 3 and fu > 69) or (han == 4 and fu > 39) or (han == 5))
 
     def is_haneman(self):
         """
@@ -955,8 +955,8 @@ class MahjongPlayer:
         """
         count = 0
         for i in self.yakus():
-            if i in ['suankou', 'daisangen', 'kokushimusou', 'ryuisou', 'tuisou', 'chinroutou', 'sukantu', \
-                    'syoususi', 'daisusi', 'tyurenboutou', 'chihou', 'tenhou']:
+            if i in ['suankou', 'daisangen', 'kokushimusou', 'ryuisou', 'tuisou', 'chinroutou', 'sukantu',
+                     'syoususi', 'daisusi', 'tyurenboutou', 'chihou', 'tenhou']:
                 count += 1
         return(count)
 
@@ -967,7 +967,7 @@ class MahjongPlayer:
         is_sanbaiman : bool
             役満かどうか
         """
-        return(self.yakuman_count()==1)
+        return(self.yakuman_count() == 1)
 
     def is_doubleyakuman(self):
         """
@@ -976,7 +976,7 @@ class MahjongPlayer:
         is_sanbaiman : bool
             ダブル役満かどうか
         """
-        return(self.yakuman_count()==2)
+        return(self.yakuman_count() == 2)
 
     def is_tripleyakuman(self):
         """
@@ -985,7 +985,7 @@ class MahjongPlayer:
         is_sanbaiman : bool
             トリプル役満かどうか
         """
-        return(self.yakuman_count()==3)
+        return(self.yakuman_count() == 3)
 
     def score_ron(self):
         """
@@ -994,15 +994,15 @@ class MahjongPlayer:
         score : int
             ロンのときの獲得点数
         """
-        SCORE_OYA = [[0,0,1500,2000,2400,2900,3400,3900,4400,4800,5300], \
-                     [2100,2400,2900,3900,4800,5800,6800,7700,8700,9600,10600], \
-                     [3900,4800,5800,7700,9600,11600]+[12000]*5, \
-                     [7800,9600,11600]+[12000]*8, \
+        SCORE_OYA = [[0,0,1500,2000,2400,2900,3400,3900,4400,4800,5300],
+                     [2100,2400,2900,3900,4800,5800,6800,7700,8700,9600,10600],
+                     [3900,4800,5800,7700,9600,11600]+[12000]*5,
+                     [7800,9600,11600]+[12000]*8,
                      [12000]]+[[18000]]*2+[[24000]]*3+[[36000]]*2+[[48000]]*9+[[96000]]*9+[[144000]]*9
-        SCORE_KO = [[0,0,1000,1300,1600,2000,2300,2600,2900,3200,3600], \
-                    [1500,1600,2000,2600,3200,3900,4500,5200,5800,6400,7100], \
-                    [2700,3200,3900,5200,6400,7700]+[8000]*5, \
-                    [5200,6400,7700]+[8000]*8, \
+        SCORE_KO = [[0,0,1000,1300,1600,2000,2300,2600,2900,3200,3600],
+                    [1500,1600,2000,2600,3200,3900,4500,5200,5800,6400,7100],
+                    [2700,3200,3900,5200,6400,7700]+[8000]*5,
+                    [5200,6400,7700]+[8000]*8,
                     [8000]]+[[12000]]*2+[[16000]]*3+[[24000]]*2+[[32000]]*9+[[64000]]*9+[[96000]]*9
         fu_index = ([20,25] + [i*10 for i in range(3,12)]).index(self.score_fu())
         if self.score_han() > 4:fu_index = 0
@@ -1091,7 +1091,7 @@ class MahjongPlayer:
         is_menzen : bool
             門前かどうか
         """
-        return((len(self.melds)-len(self.ankans))==0)
+        return((len(self.melds) - len(self.ankans)) == 0)
 
     def is_wait_ryanmen(self):
         """
@@ -1127,7 +1127,7 @@ class MahjongPlayer:
             捨てる牌
 
         """
-        if not tile in self.hands:
+        if tile not in self.hands:
             raise RuntimeError('does NOT have such tile')
         else:
             self.turn += 1
@@ -1181,19 +1181,19 @@ class MahjongPlayer:
         """
         if tile.tile_type in self.TILE_TYPES[3:]: return(False)
         count = []
-        if tile.number>2:
+        if tile.number > 2:
             count.append(self.hands.count(mahjongpy.MahjongTile(tile.tile_type,tile.number-2)))
         else:
             count.append(0)
-        if tile.number>1:
+        if tile.number > 1:
             count.append(self.hands.count(mahjongpy.MahjongTile(tile.tile_type,tile.number-1)))
         else:
             count.append(0)
-        if tile.number<9:
+        if tile.number < 9:
             count.append(self.hands.count(mahjongpy.MahjongTile(tile.tile_type,tile.number+1)))
         else:
             count.append(0)
-        if tile.number<8:
+        if tile.number < 8:
             count.append(self.hands.count(mahjongpy.MahjongTile(tile.tile_type,tile.number+2)))
         else:
             count.append(0)
@@ -1229,7 +1229,7 @@ class MahjongPlayer:
         can_minkan : bool
             明槓できるかどうか
         """
-        return(self.hands.count(tile)==3)
+        return(self.hands.count(tile) == 3)
 
     def can_kakan(self):
         """
@@ -1278,7 +1278,7 @@ class MahjongPlayer:
         if p is None and count != 4: raise RuntimeError('Nobody discards such tile')
         if count < 3: raise RuntimeError('Lack of amount of tiles for kan')
         tmp = []
-        if p is None: #暗槓
+        if p is None:  # 暗槓
             for _ in range(4):
                 tmp.append(self.hands.pop(self.hands.index(tile)))
             self.ankans.append(tmp)
@@ -1288,7 +1288,7 @@ class MahjongPlayer:
             self.table.add_kandora()
             #self.discard(SOME_TILE)
         else:
-            for _ in range(3): #大明槓
+            for _ in range(3):  # 大明槓
                 tmp.append(self.hands.pop(self.hands.index(tile)))
             tmp.append(p.discards.pop(p.discards.index(tile)))
             index = 0 if self.table is None else {0:3,1:1,2:0}[self.table.players[1:].index(p)]
@@ -1314,7 +1314,7 @@ class MahjongPlayer:
         tile : MahjongTile
             カンする牌
         """
-        if not tile in self.hands: raise RuntimeError('You DON\'T have such tile')
+        if tile not in self.hands: raise RuntimeError('You DON\'T have such tile')
         flag = False
         index = None
         for i in range(len(self.minkos)):
@@ -1431,7 +1431,6 @@ class MahjongPlayer:
             if self.riichi and self.table is not None:
                 for i in range(len(self.table.dora_tiles)):
                     self.table.add_kandora(ura=True)
-
 
     def next_player(self):
         """

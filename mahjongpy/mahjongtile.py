@@ -22,8 +22,8 @@ class MahjongTile:
     NEXT_ZIHAI = {'ton':'nan', 'nan':'sha', 'sha':'pei', 'pei':'ton', 'haku':'hatu', 'hatu':'tyun', 'tyun':'haku'}
 
     def __init__(self, tile_type, number=1, akadora=False, from_tacha=False):
-        if not tile_type in self.TILE_TYPES+[None]: raise ValueError('unknown tile types')
-        if not number in [i for i in range(1,10)]+[None]: raise ValueError('unknown tile types')
+        if tile_type not in self.TILE_TYPES+[None]: raise ValueError('unknown tile types')
+        if number not in [i for i in range(1,10)]+[None]: raise ValueError('unknown tile types')
         self.tile_type = tile_type
         self.number = number
         if tile_type in self.TILE_TYPES_ZIHAI: self.number = None
@@ -137,7 +137,6 @@ class MahjongTile:
             tiles.append(MahjongTile(ZIHAI_TILES[i]))
         return(tiles)
 
-
     def next(self):
         """
         数字が次の牌を返す。字牌の場合は次の種類の牌。ドラ表示牌からドラ牌求めるときのやつ
@@ -155,14 +154,14 @@ class MahjongTile:
             return(MahjongTile(self.NEXT_ZIHAI[self.tile_type]))
 
     def __lt__(self, other):
-            TYPE_PRIORITY = {'manzu':1, 'souzu':2, 'pinzu':3, 'ton':4, 'nan':5, 'sha':6, 'pei':7, 'haku':8, 'hatu':9, 'tyun':10}
-            if self.tile_type != other.tile_type:
-                return(TYPE_PRIORITY[self.tile_type] < TYPE_PRIORITY[other.tile_type])
+        TYPE_PRIORITY = {'manzu':1, 'souzu':2, 'pinzu':3, 'ton':4, 'nan':5, 'sha':6, 'pei':7, 'haku':8, 'hatu':9, 'tyun':10}
+        if self.tile_type != other.tile_type:
+            return(TYPE_PRIORITY[self.tile_type] < TYPE_PRIORITY[other.tile_type])
+        else:
+            if self.number is None or other.number is None:
+                return True
             else:
-                if self.number is None or other.number is None:
-                    return True
-                else:
-                    return(self.number < other.number)
+                return(self.number < other.number)
 
     def __eq__(self, other):
         return(self.tile_type == other.tile_type and self.number == other.number and self.akadora == other.akadora)
