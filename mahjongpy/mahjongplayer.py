@@ -1148,7 +1148,7 @@ class MahjongPlayer:
         if self.points < 1000: raise RuntimeError('Cannot Richii by lack of points')
         if self.table is not None and len(self.table.tiles) < 4: raise RuntimeError('Cannot Riichi by lack of table tiles')
         is_furoed = False if self.table is None else self.table.is_furoed
-        if self.turn == 0 and is_furoed: self.doubleriichi = True
+        if self.turn == 0 and not is_furoed: self.is_doubleriichi = True
         self.riichi_turn = self.turn
         self.is_riichi = True
         if self.table is not None: self.table.ri_bou += 1

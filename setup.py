@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 setup(
     name = 'mahjongpy',
     packages = ['mahjongpy'],
-    version = '0.2.0',
+    version = '0.2.2',
     license = 'MIT',
     install_requires = [],
     author = 'Irisrainbow7',
