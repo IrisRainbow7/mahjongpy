@@ -705,7 +705,7 @@ class MahjongPlayer:
         table_tiles = [] if self.table is None else self.table.tiles
         if len(table_tiles) == 14 and self.is_tumo: yakus.append('haitei')
         if len(table_tiles) == 14 and self.is_ron: yakus.append('houtei')
-        if False: yakus.append('rinsyankaihou')
+        if self.is_rinsyankaihou: yakus.append('rinsyankaihou')
         if False: yakus.append('tyankan')
         if self.is_doubleriichi: yakus.append('doubleriichi')
         if self.is_chitoitu(): yakus.append('chitoitu')
@@ -872,8 +872,8 @@ class MahjongPlayer:
         yaku_hans = {'riichi':1, 'ippatu':1, 'menzentumo':1, 'pinfu':1, 'tanyao':1, 'ipeikou':1, 'yakuhai':1,
                      'rinsyankaihou':1, 'haitei':1, 'houtei':1, 'tyankan':1, 'doubleriichi':2, 'chanta':2,
                      'ikkituukan':2, 'sansyokudouzyun':2, 'sansyokudoukou':2, 'sanankou':2, 'sankantu':2,
-                     'toitoi':2, 'chitoitu':2, 'zyuntyan':3, 'ryanpeikou':3, 'honitu':3, 'honroutou':4,
-                     'syousangen':4, 'chinitu':6}
+                     'toitoi':2, 'chitoitu':2, 'zyuntyan':3, 'ryanpeikou':3, 'honitu':3, 'honroutou':2,
+                     'syousangen':2, 'chinitu':6}
         yaku_hans_furoed = dict(yaku_hans.items())
         yaku_hans_furoed['tyankan'] = 1
         yaku_hans_furoed['ikkituukan'] = 1
